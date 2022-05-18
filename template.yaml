@@ -1,0 +1,1429 @@
+---
+# Source: hava/charts/elasticsearch/templates/poddisruptionbudget.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: "elasticsearch-master-pdb"
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: "elasticsearch-master"
+---
+# Source: hava/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bob-hava-secrets
+  labels:
+    app.kubernetes.io/name: hava
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+stringData:
+  encrypt-iv: "iv"
+  encrypt-key: "key"
+  azure-secret-key: "example"
+  car-user-secret-key: "example"
+  secret-key: "example"
+  database-pass: "havahava"
+  elasticsearch-pass: "example"
+  embed-signing-key: "example"
+  smtp-email-pass: "example"
+  gcp-private-key: "example"
+  images-secret-key: "example"
+  s3-secret-access-key: "example"
+---
+# Source: hava/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bob-hava-environment
+  labels:
+    app.kubernetes.io/name: hava
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+data:
+  ENVIRONMENT: "bob"
+  NAME: "bob-hava"
+
+  AUTO_SYNC_ENABLED: "true"
+  AUTO_SYNC: "true"
+  AUTO_SYNC_COUNT: "30"
+  AUTO_SYNC_MINUTES: "1440"
+
+  PROVIDER_AZURE_ENABLED: "true"
+  AZURE_CLIENT_ID: "example"
+  AZURE_SUBSCRIPTION_ID: "example"
+  AZURE_TENANT_ID: "example"
+
+  PROVIDER_AWS_CAR_ENABLED: "true"
+  CAR_ACCOUNT_ID: "example"
+  CAR_USER_ACCESS_KEY: "example"
+
+  RENDER_TYPE: "s3"
+  RENDER_S3_ACCESS_KEY_ID: "example"
+  RENDER_S3_BUCKET: "example"
+  RENDER_S3_REGION: "example"
+  RENDER_LOCATION: "/tmp"
+
+  DESIGN_SVG_URL: "https://s3-example.amazonaws.com/example"
+
+  AUTH0_ENABLED: "false"
+
+  # Application URLs
+  HAVA_HOST: "http://app.example.com"
+  COOKIE_DOMAIN: ".example.com"
+  API_SCHEME: "http"
+  API_HOST: "api.example.com"
+  API_PORT: "80"
+  API_PATH: "/"
+  ICONS_SCHEME: "http"
+  ICONS_HOST: "app.example.com"
+  ICONS_PORT: "80"
+  ICONS_PATH: "/tmp"
+
+  # Connection URLs (contains secrets 🤫)
+  ELASTICSEARCH_URL: "http://elasticsearch-master:9200"
+  DATABASE_URL: "postgres://postgres:havahava@hava.cxouiktzim2e.us-east-1.rds.amazonaws.com:5432/hava"
+  REDIS_URL: "redis://bob-hava-redis:6379"
+
+  # Puma
+  WEB_CONCURRENCY: "2"
+  WEB_THREADS: "2"
+
+  # Execution and lifetime settings
+  CONCURRENCY_BUILD: "2"
+  CONCURRENCY_IMPORT: "2"
+  CONCURRENCY_RENDER: "2"
+  CONCURRENCY_WEB: "2"
+  CONCURRENCY_WORKER: "2"
+  CONCURRENCY_REPORT: "2"
+  CONCURRENCY_MAINTENANCE: "2"
+  LIFETIME_BUILD: "1440"
+  LIFETIME_CLOCK: "1440"
+  LIFETIME_IMPORT: "9000"
+  LIFETIME_RENDER: "1440"
+  LIFETIME_WEB: "1440"
+  LIFETIME_WORKER: "1440"
+  LIFETIME_REPORT: "1440"
+  LIFETIME_MAINTENANCE: "1440"
+  POOL_BUILD: "40"
+  POOL_IMPORT: "40"
+  POOL_RENDER: "40"
+  POOL_WORKER: "40"
+  POOL_REPORT: "40"
+  POOL_MAINTENANCE: "40"
+
+  # CAPTCHA and security
+  RECAPTCHA_ENABLED: "false"
+
+  # Report config
+  CLOUDMAPPER_PATH: "example"
+
+  # Assets
+  ASSETS_CDN: "app.example.com"
+
+  # Share and embed config - port is 443
+  EMBEDDABLE_TYPE: "cloudfront"
+
+  # Email
+  SMTP_USER: "example"
+  SMTP_ADDRESS: "example.com"
+  SMTP_PORT: "53"
+  SMTP_DOMAIN: "example.com"
+  EMAIL_FROM_ADDRESS: "noreply@example.com"
+  EMAIL_FROM_NAME: "No Reply"
+---
+# Source: hava/templates/storage.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hava-ssd
+provisioner: kubernetes.io/aws-ebs
+allowVolumeExpansion: true
+parameters:
+  type: io1
+  iopsPerGB: "10"
+  fsType: ext4
+---
+# Source: hava/charts/elasticsearch/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: elasticsearch-master
+  labels:
+    heritage: "Helm"
+    release: "bob"
+    chart: "elasticsearch"
+    app: "elasticsearch-master"
+  annotations:
+    {}
+spec:
+  type: ClusterIP
+  selector:
+    release: "bob"
+    chart: "elasticsearch"
+    app: "elasticsearch-master"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9200
+  - name: transport
+    protocol: TCP
+    port: 9300
+---
+# Source: hava/charts/elasticsearch/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: elasticsearch-master-headless
+  labels:
+    heritage: "Helm"
+    release: "bob"
+    chart: "elasticsearch"
+    app: "elasticsearch-master"
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  clusterIP: None # This is needed for statefulset hostnames like elasticsearch-0 to resolve
+  # Create endpoints also if the related pod isn't ready
+  publishNotReadyAddresses: true
+  selector:
+    app: "elasticsearch-master"
+  ports:
+  - name: http
+    port: 9200
+  - name: transport
+    port: 9300
+---
+# Source: hava/charts/kibana/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: bob-kibana
+  labels: 
+    app: kibana
+    release: "bob"
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5601
+      protocol: TCP
+      name: http
+      targetPort: 5601
+  selector:
+    app: kibana
+    release: "bob"
+---
+# Source: hava/templates/service-redis.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: bob-hava-redis
+  labels:
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: hava-redis
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app.kubernetes.io/name: hava-redis
+    app.kubernetes.io/instance: bob
+---
+# Source: hava/templates/service-web.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: bob-hava-web
+  labels:
+    app.kubernetes.io/name: hava-web
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: NodePort
+  ports:
+    - port: 9700
+      targetPort: 9700
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: hava-web
+    app.kubernetes.io/instance: bob
+---
+# Source: hava/charts/kibana/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-kibana
+  labels: 
+    app: kibana
+    release: "bob"
+    heritage: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: kibana
+      release: "bob"
+  template:
+    metadata:
+      labels:
+        app: kibana
+        release: "bob"
+      annotations:
+        
+    spec:
+      securityContext:
+        fsGroup: 1000
+      volumes:
+      containers:
+      - name: kibana
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+        image: "docker.elastic.co/kibana/kibana:6.8.13"
+        imagePullPolicy: "IfNotPresent"
+        env:
+          - name: ELASTICSEARCH_HOSTS
+            value: "http://elasticsearch-master:9200"
+          - name: SERVER_HOST
+            value: "0.0.0.0"
+          - name: NODE_OPTIONS
+            value: --max-old-space-size=1800
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 3
+          timeoutSeconds: 5
+          exec:
+            command:
+              - sh
+              - -c
+              - |
+                #!/usr/bin/env bash -e
+
+                # Disable nss cache to avoid filling dentry cache when calling curl
+                # This is required with Kibana Docker using nss < 3.52
+                export NSS_SDB_USE_CACHE=no
+
+                http () {
+                    local path="${1}"
+                    set -- -XGET -s --fail -L
+
+                    if [ -n "${ELASTICSEARCH_USERNAME}" ] && [ -n "${ELASTICSEARCH_PASSWORD}" ]; then
+                      set -- "$@" -u "${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}"
+                    fi
+
+                    STATUS=$(curl --output /dev/null --write-out "%{http_code}" -k "$@" "http://localhost:5601${path}")
+                    if [[ "${STATUS}" -eq 200 ]]; then
+                      exit 0
+                    fi
+
+                    echo "Error: Got HTTP code ${STATUS} but expected a 200"
+                    exit 1
+                }
+
+                http "/app/kibana"
+        ports:
+        - containerPort: 5601
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+        volumeMounts:
+---
+# Source: hava/templates/deployment-build.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-hava-build
+  labels:
+    app.kubernetes.io/name: hava-build
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-build
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-build
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+      - name: hava-build
+        image: "hava/self-hosted:2.0.237"
+        imagePullPolicy: IfNotPresent
+        command: ["/hava/bin/hava"]
+        args: ["exec", "build"]
+        resources:
+          limits:
+            memory: 2560M
+        envFrom:
+        - configMapRef:
+            name: bob-hava-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "REDIS_URL"
+        - name: AZURE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "azure-secret-key"
+        - name: CAR_USER_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "car-user-secret-key"
+        - name: ELASTICSEARCH_PASS
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "elasticsearch-pass"
+        - name: ENCRYPT_IV
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-iv"
+        - name: ENCRYPT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-key"
+        - name: IMAGES_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "images-secret-key"
+        - name: RENDER_S3_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "s3-secret-access-key"
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "smtp-email-pass"
+---
+# Source: hava/templates/deployment-clock.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-hava-clock
+  labels:
+    app.kubernetes.io/name: hava-clock
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-clock
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-clock
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+      - name: hava-clock
+        image: "hava/self-hosted:2.0.237"
+        imagePullPolicy: IfNotPresent
+        command: ["/hava/bin/hava"]
+        args: ["exec", "clock"]
+        # resources:
+        #   requests:
+        #     cpu: "1"
+        #     memory: "1024M"
+          # limits:
+          #   cpu: "1"
+          #   memory: "1536M"
+        envFrom:
+        - configMapRef:
+            name: bob-hava-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "REDIS_URL"
+        - name: AZURE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "azure-secret-key"
+        - name: CAR_USER_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "car-user-secret-key"
+        - name: ELASTICSEARCH_PASS
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "elasticsearch-pass"
+        - name: ENCRYPT_IV
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-iv"
+        - name: ENCRYPT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-key"
+        - name: IMAGES_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "images-secret-key"
+        - name: RENDER_S3_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "s3-secret-access-key"
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "smtp-email-pass"
+---
+# Source: hava/templates/deployment-import.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-hava-import
+  labels:
+    app.kubernetes.io/name: hava-import
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-import
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-import
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+      - name: hava-import
+        image: "hava/self-hosted:2.0.237"
+        imagePullPolicy: IfNotPresent
+        command: ["/hava/bin/hava"]
+        args: ["exec", "import"]
+        resources:
+          requests:
+            cpu: 500m
+          limits:
+            memory: 3072M
+        envFrom:
+        - configMapRef:
+            name: bob-hava-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "REDIS_URL"
+        - name: AZURE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "azure-secret-key"
+        - name: CAR_USER_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "car-user-secret-key"
+        - name: ELASTICSEARCH_PASS
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "elasticsearch-pass"
+        - name: ENCRYPT_IV
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-iv"
+        - name: ENCRYPT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-key"
+        - name: IMAGES_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "images-secret-key"
+        - name: RENDER_S3_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "s3-secret-access-key"
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "smtp-email-pass"
+---
+# Source: hava/templates/deployment-render.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-hava-render
+  labels:
+    app.kubernetes.io/name: hava-render
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-render
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-render
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+      - name: hava-render
+        image: "hava/self-hosted:2.0.237"
+        imagePullPolicy: IfNotPresent
+        command: ["/hava/bin/hava"]
+        args: ["exec", "render"]
+        resources:
+          limits:
+            memory: 2560M
+        envFrom:
+        - configMapRef:
+            name: bob-hava-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "REDIS_URL"
+        - name: AZURE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "azure-secret-key"
+        - name: CAR_USER_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "car-user-secret-key"
+        - name: ELASTICSEARCH_PASS
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "elasticsearch-pass"
+        - name: ENCRYPT_IV
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-iv"
+        - name: ENCRYPT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-key"
+        - name: IMAGES_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "images-secret-key"
+        - name: RENDER_S3_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "s3-secret-access-key"
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "smtp-email-pass"
+---
+# Source: hava/templates/deployment-report.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-hava-report
+  labels:
+    app.kubernetes.io/name: hava-report
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-report
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-report
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+        - name: hava-report
+          image: "hava/self-hosted:2.0.237"
+          imagePullPolicy: IfNotPresent
+          command: ["/hava/bin/hava"]
+          args: ["exec", "report"]
+          resources:
+            limits:
+              memory: 4096M
+          envFrom:
+            - configMapRef:
+                name: bob-hava-environment
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: bob-hava-environment
+                  key: "DATABASE_URL"
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: bob-hava-environment
+                  key: "REDIS_URL"
+            - name: AZURE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "azure-secret-key"
+            - name: CAR_USER_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "car-user-secret-key"
+            - name: ELASTICSEARCH_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "elasticsearch-pass"
+            - name: ENCRYPT_IV
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "encrypt-iv"
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "encrypt-key"
+            - name: IMAGES_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "images-secret-key"
+            - name: RENDER_S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "s3-secret-access-key"
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "smtp-email-pass"
+            - name: SENDGRID_API_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "sendgrid-api-pass"
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bob-hava-secrets
+                  key: "stripe-api-key"
+---
+# Source: hava/templates/deployment-web.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-hava-web
+  labels:
+    app.kubernetes.io/name: hava-web
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-web
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-web
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+        - name: hava
+          image: "hava/self-hosted:2.0.237"
+          imagePullPolicy: IfNotPresent
+          command: ["/hava/bin/hava"]
+          args: ["exec", "web"]
+          resources:
+            requests:
+              cpu: 300m
+            limits:
+              memory: 1536M
+          envFrom:
+          - configMapRef:
+              name: bob-hava-environment
+          env:
+          - name: DATABASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: bob-hava-environment
+                key: "DATABASE_URL"
+          - name: REDIS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: bob-hava-environment
+                key: "REDIS_URL"
+          - name: AZURE_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "azure-secret-key"
+          - name: CAR_USER_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "car-user-secret-key"
+          - name: ELASTICSEARCH_PASS
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "elasticsearch-pass"
+          - name: ENCRYPT_IV
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "encrypt-iv"
+          - name: ENCRYPT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "encrypt-key"
+          - name: IMAGES_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "images-secret-key"
+          - name: RENDER_S3_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "s3-secret-access-key"
+          - name: SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "smtp-email-pass"
+          - name: GOOGLE_PRIVATE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "gcp-private-key"
+          - name: EMBEDDABLE_SIGNING_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bob-hava-secrets
+                key: "embed-signing-key"
+          ports:
+            - name: http
+              containerPort: 9700
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health_check
+              port: 9700
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 10
+---
+# Source: hava/templates/deployment-worker.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bob-hava-worker
+  labels:
+    app.kubernetes.io/name: hava-worker
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-worker
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-worker
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+      - name: hava-worker
+        image: "hava/self-hosted:2.0.237"
+        command: ["/hava/bin/hava"]
+        args: ["exec", "worker"]
+        resources:
+          limits:
+            memory: 3072M
+        envFrom:
+        - configMapRef:
+            name: bob-hava-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "REDIS_URL"
+        - name: AZURE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "azure-secret-key"
+        - name: CAR_USER_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "car-user-secret-key"
+        - name: ELASTICSEARCH_PASS
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "elasticsearch-pass"
+        - name: ENCRYPT_IV
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-iv"
+        - name: ENCRYPT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "encrypt-key"
+        - name: IMAGES_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "images-secret-key"
+        - name: RENDER_S3_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "s3-secret-access-key"
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bob-hava-secrets
+              key: "smtp-email-pass"
+---
+# Source: hava/charts/elasticsearch/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch-master
+  labels:
+    heritage: "Helm"
+    release: "bob"
+    chart: "elasticsearch"
+    app: "elasticsearch-master"
+  annotations:
+    esMajorVersion: "6"
+spec:
+  serviceName: elasticsearch-master-headless
+  selector:
+    matchLabels:
+      app: "elasticsearch-master"
+  replicas: 3
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: elasticsearch-master
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 200Gi
+      storageClassName: hava-ssd
+  template:
+    metadata:
+      name: "elasticsearch-master"
+      labels:
+        heritage: "Helm"
+        release: "bob"
+        chart: "elasticsearch"
+        app: "elasticsearch-master"
+      annotations:
+        
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - "elasticsearch-master"
+            topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 120
+      volumes:
+      enableServiceLinks: true
+      initContainers:
+      - name: configure-sysctl
+        securityContext:
+          runAsUser: 0
+          privileged: true
+        image: "docker.elastic.co/elasticsearch/elasticsearch:6.8.13"
+        imagePullPolicy: "IfNotPresent"
+        command: ["sysctl", "-w", "vm.max_map_count=262144"]
+        resources:
+          {}
+
+      containers:
+      - name: "elasticsearch"
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+        image: "docker.elastic.co/elasticsearch/elasticsearch:6.8.13"
+        imagePullPolicy: "IfNotPresent"
+        readinessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - |
+                #!/usr/bin/env bash -e
+                # If the node is starting up wait for the cluster to be ready (request params: "wait_for_status=green&timeout=1s" )
+                # Once it has started only check that the node itself is responding
+                START_FILE=/tmp/.es_start_file
+
+                # Disable nss cache to avoid filling dentry cache when calling curl
+                # This is required with Elasticsearch Docker using nss < 3.52
+                export NSS_SDB_USE_CACHE=no
+
+                http () {
+                  local path="${1}"
+                  local args="${2}"
+                  set -- -XGET -s
+
+                  if [ "$args" != "" ]; then
+                    set -- "$@" $args
+                  fi
+
+                  if [ -n "${ELASTIC_USERNAME}" ] && [ -n "${ELASTIC_PASSWORD}" ]; then
+                    set -- "$@" -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}"
+                  fi
+
+                  curl --output /dev/null -k "$@" "http://127.0.0.1:9200${path}"
+                }
+
+                if [ -f "${START_FILE}" ]; then
+                  echo 'Elasticsearch is already running, lets check the node is healthy'
+                  HTTP_CODE=$(http "/" "-w %{http_code}")
+                  RC=$?
+                  if [[ ${RC} -ne 0 ]]; then
+                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} http://127.0.0.1:9200/ failed with RC ${RC}"
+                    exit ${RC}
+                  fi
+                  # ready if HTTP code 200, 503 is tolerable if ES version is 6.x
+                  if [[ ${HTTP_CODE} == "200" ]]; then
+                    exit 0
+                  elif [[ ${HTTP_CODE} == "503" && "6" == "6" ]]; then
+                    exit 0
+                  else
+                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} http://127.0.0.1:9200/ failed with HTTP code ${HTTP_CODE}"
+                    exit 1
+                  fi
+
+                else
+                  echo 'Waiting for elasticsearch cluster to become ready (request params: "wait_for_status=green&timeout=1s" )'
+                  if http "/_cluster/health?wait_for_status=green&timeout=1s" "--fail" ; then
+                    touch ${START_FILE}
+                    exit 0
+                  else
+                    echo 'Cluster is not yet ready (request params: "wait_for_status=green&timeout=1s" )'
+                    exit 1
+                  fi
+                fi
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 3
+          timeoutSeconds: 5
+        ports:
+        - name: http
+          containerPort: 9200
+        - name: transport
+          containerPort: 9300
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+        env:
+          - name: node.name
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: discovery.zen.minimum_master_nodes
+            value: "2"
+          - name: discovery.zen.ping.unicast.hosts
+            value: "elasticsearch-master-headless"
+          - name: cluster.name
+            value: "elasticsearch"
+          - name: network.host
+            value: "0.0.0.0"
+          - name: ES_JAVA_OPTS
+            value: "-Xmx1g -Xms1g"
+          - name: node.data
+            value: "true"
+          - name: node.ingest
+            value: "true"
+          - name: node.master
+            value: "true"
+        volumeMounts:
+          - name: "elasticsearch-master"
+            mountPath: /usr/share/elasticsearch/data
+---
+# Source: hava/templates/statefulset-redis.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bob-hava-redis
+  labels:
+    app.kubernetes.io/name: hava-redis
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hava-redis
+      app.kubernetes.io/instance: bob
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hava-redis
+        app.kubernetes.io/instance: bob
+    spec:
+      containers:
+      - name: hava-redis
+        image: redis:3.2-alpine
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "hava-ssd"
+      resources:
+        requests:
+          storage: 4Gi
+---
+# Source: hava/templates/ingress-web.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: aws-load-balancer
+spec:
+  controller: ingress.k8s.aws/alb
+---
+# Source: hava/templates/ingress-web.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bob-hava-ingress
+  labels:
+    app.kubernetes.io/name: bob-hava-ingress
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+spec:
+  ingressClassName: aws-load-balancer
+  defaultBackend:
+    service:
+      name: bob-hava-web
+      port: 
+        number: 9700
+---
+# Source: hava/charts/elasticsearch/templates/test/test-elasticsearch-health.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "bob-xeyfd-test"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  securityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+  containers:
+  - name: "bob-hsuqq-test"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:6.8.13"
+    imagePullPolicy: "IfNotPresent"
+    command:
+      - "sh"
+      - "-c"
+      - |
+        #!/usr/bin/env bash -e
+        curl -XGET --fail 'elasticsearch-master:9200/_cluster/health?wait_for_status=green&timeout=1s'
+  restartPolicy: Never
+---
+# Source: hava/templates/job-install.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bob-hava-migration
+  labels:
+    app.kubernetes.io/name: hava
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-install
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/instance: "bob"
+        helm.sh/chart: "hava-0.1.0"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: setup
+        image: "hava/self-hosted:2.0.237"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args: ["hava exec rake db:setup && hava exec rake es:index && hava accounts setup hava hava@example.com "]
+        envFrom:
+        - configMapRef:
+            name: bob-hava-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "REDIS_URL"
+        - name: ELASTICSEARCH_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "ELASTICSEARCH_URL"
+---
+# Source: hava/templates/job-upgrade.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bob-hava-migration
+  labels:
+    app.kubernetes.io/name: hava
+    helm.sh/chart: hava-0.1.0
+    app.kubernetes.io/instance: bob
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: 022b7e39a9f94aef310a571ed47131c3ae0b50864c798b42e14d50342d4762aa
+        checksum.helm.kubernetes.io/configmap: 411c173002a67a57f2a401bfa8c84b2d04382fa796b37d896f396768df1c6d58
+      labels:
+        app.kubernetes.io/name: hava-upgrade
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/instance: "bob"
+        helm.sh/chart: "hava-0.1.0"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: setup
+        image: "hava/self-hosted:2.0.237"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args: ["hava exec rake db:migrate"]
+        envFrom:
+        - configMapRef:
+            name: bob-hava-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "REDIS_URL"
+        - name: ELASTICSEARCH_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bob-hava-environment
+              key: "ELASTICSEARCH_URL"

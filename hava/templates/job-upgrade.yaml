@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "hava.fullname" . }}-upgrade
+  labels:
+    app.kubernetes.io/name: {{ include "hava.name" . }}
+    helm.sh/chart: {{ include "hava.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        checksum.helm.kubernetes.io/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "hava.name" . }}-upgrade
+        app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+        app.kubernetes.io/instance: {{.Release.Name | quote }}
+        helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: setup
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args: ["hava exec rake db:migrate"]
+        envFrom:
+        - configMapRef:
+            name: {{ include "hava.fullname" . }}-environment
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "hava.fullname" . }}-environment
+              key: "DATABASE_URL"
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "hava.fullname" . }}-environment
+              key: "REDIS_URL"
+        - name: ELASTICSEARCH_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "hava.fullname" . }}-environment
+              key: "ELASTICSEARCH_URL"

@@ -1,0 +1,104 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hava.fullname" . }}-report
+  labels:
+    app.kubernetes.io/name: {{ include "hava.name" . }}-report
+    helm.sh/chart: {{ include "hava.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.report.replicas }}
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "hava.name" . }}-report
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum.helm.kubernetes.io/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        checksum.helm.kubernetes.io/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "hava.name" . }}-report
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-report
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/hava/bin/hava"]
+          args: ["exec", "report"]
+          resources:
+            limits:
+              memory: 4096M
+          envFrom:
+            - configMapRef:
+                name: {{ include "hava.fullname" . }}-environment
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "hava.fullname" . }}-environment
+                  key: "DATABASE_URL"
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "hava.fullname" . }}-environment
+                  key: "REDIS_URL"
+            - name: AZURE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "azure-secret-key"
+            - name: CAR_USER_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "car-user-secret-key"
+            - name: ELASTICSEARCH_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "elasticsearch-pass"
+            - name: ENCRYPT_IV
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "encrypt-iv"
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "encrypt-key"
+            - name: IMAGES_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "images-secret-key"
+            - name: RENDER_S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "s3-secret-access-key"
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "smtp-email-pass"
+            - name: SENDGRID_API_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "sendgrid-api-pass"
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hava.fullname" . }}-secrets
+                  key: "stripe-api-key"

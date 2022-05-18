@@ -1,0 +1,29 @@
+{{- if .Values.web.ingress.enable }}
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: aws-load-balancer
+spec:
+  controller: ingress.k8s.aws/alb
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "hava.fullname" . }}-ingress
+  labels:
+    app.kubernetes.io/name: {{ include "hava.fullname" . }}-ingress
+    helm.sh/chart: {{ include "hava.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+spec:
+  ingressClassName: aws-load-balancer
+  defaultBackend:
+    service:
+      name: {{ include "hava.fullname" . }}-web
+      port: 
+        number: 9700
+        
+{{- end }}
