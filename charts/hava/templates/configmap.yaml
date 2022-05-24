@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hava.fullname" . }}-environment
+  labels:
+    app.kubernetes.io/name: {{ include "hava.name" . }}
+    helm.sh/chart: {{ include "hava.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  ENVIRONMENT: {{ .Values.environment.type | quote }}
+  NAME: {{ include "hava.fullname" . | quote }}
+
+  AUTO_SYNC_ENABLED: "true"
+  AUTO_SYNC: {{ .Values.import.auto_sync.enabled | quote }}
+  AUTO_SYNC_COUNT: {{ .Values.import.auto_sync.count | quote }}
+  AUTO_SYNC_MINUTES: {{ .Values.import.auto_sync.minutes | quote }}
+
+  PROVIDER_AZURE_ENABLED: "true"
+  AZURE_CLIENT_ID: {{ .Values.import.azure.client_id | quote }}
+  AZURE_SUBSCRIPTION_ID: {{ .Values.import.azure.subscription_id | quote }}
+  AZURE_TENANT_ID: {{ .Values.import.azure.tenant_id | quote }}
+
+  PROVIDER_AWS_CAR_ENABLED: "true"
+  CAR_ACCOUNT_ID: {{ .Values.import.aws.account_id | quote }}
+  CAR_USER_ACCESS_KEY: {{ .Values.import.aws.access_key | quote }}
+
+  RENDER_TYPE: "s3"
+  RENDER_S3_ACCESS_KEY_ID: {{ .Values.render.aws.access_key | quote }}
+  RENDER_S3_BUCKET: {{ .Values.render.aws.bucket | quote }}
+  RENDER_S3_REGION: {{ .Values.render.aws.region | quote }}
+  RENDER_LOCATION: "/tmp"
+
+  DESIGN_SVG_URL: "https://s3-{{ .Values.render.aws.region }}.amazonaws.com/{{ .Values.render.aws.bucket }}"
+
+  AUTH0_ENABLED: "false"
+
+  # Application URLs
+  HAVA_HOST: "http://app.{{ .Values.environment.domain }}"
+  COOKIE_DOMAIN: ".{{ .Values.environment.domain }}"
+  API_SCHEME: "http"
+  API_HOST: "api.{{ .Values.environment.domain }}"
+  API_PORT: "80"
+  API_PATH: "/"
+  ICONS_SCHEME: {{ .Values.web.icons.scheme | quote }}
+  ICONS_HOST: {{ .Values.web.icons.host | quote }}
+  ICONS_PORT: {{ .Values.web.icons.port | quote }}
+  ICONS_PATH: {{ .Values.web.icons.path | quote }}
+
+  # Connection URLs (contains secrets 🤫)
+  {{- if .Values.elasticsearch.host }}
+  ELASTICSEARCH_URL: "http://{{ .Values.elasticsearch.host }}:9200"
+  {{- else }}
+  ELASTICSEARCH_URL: "http://elasticsearch-master:9200"
+  {{- end }}
+
+  {{- if .Values.database.host }}
+  DATABASE_URL: "postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/hava"
+  {{- else }}
+  DATABASE_URL: "postgres://hava:hava@{{ include "hava.fullname" . }}-db:5432/hava"
+  {{- end }}
+
+  {{- if .Values.cache.host }}
+  REDIS_URL: "redis://{{ .Values.cache.host }}:6379"
+  {{- else }}
+  REDIS_URL: "redis://{{ include "hava.fullname" . }}-redis:6379"
+  {{- end }}
+
+  # Puma
+  WEB_CONCURRENCY: {{.Values.web.concurrency | quote}}
+  WEB_THREADS: {{.Values.web.threads | quote}}
+
+  # Execution and lifetime settings
+  CONCURRENCY_BUILD: {{ .Values.build.concurrency | quote }}
+  CONCURRENCY_IMPORT: {{ .Values.import.concurrency | quote }}
+  CONCURRENCY_RENDER: {{ .Values.render.concurrency | quote }}
+  CONCURRENCY_WEB: {{ .Values.web.concurrency | quote }}
+  CONCURRENCY_WORKER: {{ .Values.worker.concurrency | quote }}
+  CONCURRENCY_REPORT: {{ .Values.report.concurrency | quote }}
+  CONCURRENCY_MAINTENANCE: {{ .Values.maintenance.concurrency | quote }}
+  LIFETIME_BUILD: {{ .Values.build.lifetime | quote }}
+  LIFETIME_CLOCK: {{ .Values.clock.lifetime | quote }}
+  LIFETIME_IMPORT: {{ .Values.import.lifetime | quote }}
+  LIFETIME_RENDER: {{ .Values.render.lifetime | quote }}
+  LIFETIME_WEB: {{ .Values.web.lifetime | quote }}
+  LIFETIME_WORKER: {{ .Values.worker.lifetime | quote }}
+  LIFETIME_REPORT: {{ .Values.report.lifetime | quote }}
+  LIFETIME_MAINTENANCE: {{ .Values.maintenance.lifetime | quote }}
+  POOL_BUILD: {{ .Values.build.pool | quote }}
+  POOL_IMPORT: {{ .Values.import.pool | quote }}
+  POOL_RENDER: {{ .Values.render.pool | quote }}
+  POOL_WORKER: {{ .Values.worker.pool | quote }}
+  POOL_REPORT: {{ .Values.report.pool | quote }}
+  POOL_MAINTENANCE: {{ .Values.maintenance.pool | quote }}
+
+  # CAPTCHA and security
+  RECAPTCHA_ENABLED: "false"
+
+  # Report config
+  CLOUDMAPPER_PATH: {{ .Values.report.cloudmapper_path | quote }}
+
+  # Assets
+  ASSETS_CDN: {{ .Values.assets.cdn | quote }}
+
+  # Share and embed config - port is 443
+  EMBEDDABLE_TYPE: "cloudfront"
+
+  # Email
+  SMTP_USER: {{ .Values.email.smtp.user | quote }}
+  SMTP_ADDRESS: {{ .Values.email.smtp.address | quote }}
+  SMTP_PORT: {{ .Values.email.smtp.port | quote }}
+  SMTP_DOMAIN: {{ .Values.email.smtp.domain | quote }}
+  EMAIL_FROM_ADDRESS: {{ .Values.email.smtp.from_address | quote }}
+  EMAIL_FROM_NAME: {{ .Values.email.smtp.from_name | quote }}
