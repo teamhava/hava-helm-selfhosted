@@ -35,8 +35,10 @@ spec:
         command: ["/hava/bin/hava"]
         args: ["exec", "worker"]
         resources:
+          requests:
+            cpu: {{ .Values.worker.cpu}}
           limits:
-            memory: 3072M
+            memory: {{ .Values.worker.memory}}
         envFrom:
         - configMapRef:
             name: {{ include "hava.fullname" . }}-environment

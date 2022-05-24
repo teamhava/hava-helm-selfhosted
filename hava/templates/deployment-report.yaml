@@ -32,12 +32,14 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-report
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolxicy }}
           command: ["/hava/bin/hava"]
           args: ["exec", "report"]
           resources:
+            requests:
+              cpu: {{ .Values.report.cpu}}
             limits:
-              memory: 4096M
+              memory: {{ .Values.report.memory}}
           envFrom:
             - configMapRef:
                 name: {{ include "hava.fullname" . }}-environment

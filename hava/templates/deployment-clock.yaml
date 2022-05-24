@@ -35,13 +35,11 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/hava/bin/hava"]
         args: ["exec", "clock"]
-        # resources:
-        #   requests:
-        #     cpu: "1"
-        #     memory: "1024M"
-          # limits:
-          #   cpu: "1"
-          #   memory: "1536M"
+        resources:
+          requests:
+            cpu: {{ .Values.clock.cpu}}
+          limits:
+            memory: {{ .Values.clock.memory}}
         envFrom:
         - configMapRef:
             name: {{ include "hava.fullname" . }}-environment

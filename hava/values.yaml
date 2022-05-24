@@ -22,7 +22,7 @@ web:
   threads: 2
   lifetime: 1440
   cpu: 300m
-  memory: 1536M
+  memory: 1024M
   secret_key: "example"
   icons:
     scheme: http
@@ -38,6 +38,8 @@ import:
   concurrency: 2
   pool: 40
   lifetime: 9000
+  cpu: 300m
+  memory: 1536M
   auto_sync:
     enabled: true
     count: 30
@@ -57,18 +59,24 @@ build:
   lifetime: 1440
   pool: 40
   replicas: 1
+  cpu: 300m
+  memory: 1024M
 
 clock:
   concurrency: 2
   lifetime: 1440
   pool: 40
   replicas: 1
+  cpu: 300m
+  memory: 1024M
 
 render:
   concurrency: 2
   lifetime: 1440
   pool: 40
   replicas: 1
+  cpu: 300m
+  memory: 1024M
   aws:
     access_key: "example"
     bucket: "example"
@@ -80,12 +88,16 @@ worker:
   lifetime: 1440
   pool: 40
   replicas: 1
+  cpu: 300m
+  memory: 1024M
 
 report:
   concurrency: 2
   lifetime: 1440
   pool: 40
   replicas: 1
+  cpu: 300m
+  memory: 1024M
   cloudmapper_path: "example"
 
 maintenance:
@@ -136,6 +148,9 @@ elasticsearch:
   enabled: true
   replicas: 3
   password: "example"
+  image: hava/elasticsearch
+  imageTag: 6.8-s3-backup
+  backup_bucket_name: hava-elasticsearch-backup
   volumeClaimTemplate:
     storageClassName: hava-ssd
     resources:

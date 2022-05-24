@@ -31,7 +31,12 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/bin/sh", "-c"]
-        args: ["hava exec rake db:setup && hava exec rake es:index && hava accounts setup {{ .Values.setup.default_user }} {{ .Values.setup.default_email }} "]
+        args: ["hava exec rake db:setup && hava exec rake es:index && hava accounts setup {{ .Values.setup.default_user }} {{ .Values.setup.default_email }} && curl -X PUT \"http://elasticsearch-master:9200/_snapshot/s3_backups?pretty\" -H 'Content-Type: application/json' -d'{ \"type\": \"s3\", \"settings\": { \"bucket\": \"{{ .Values.elasticsearch.backup_bucket_name }}\" } }'"]
+        resources:
+          requests:
+            cpu: 500m
+          limits:
+            memory: 1024M
         envFrom:
         - configMapRef:
             name: {{ include "hava.fullname" . }}-environment
