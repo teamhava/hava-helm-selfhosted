@@ -1,4 +1,7 @@
-# helm3 chart for Hava.io
+# HELM chart for Hava.io
+
+![License](https://img.shields.io/github/license/teamhava/hava-helm-selfhosted)
+![Release](https://img.shields.io/github/v/release/teamhava/hava-helm-selfhosted)
 
 This chart provides an automated way to deploy and upgrade Hava.io in your own AWS environment
 
@@ -14,12 +17,12 @@ The chart expects a few servies to be deployed and configured in your environmen
 
 - Kubernetes cluster
 - PostgreSQL
-- Backup S3 Bucket for elasticsearch
+- S3 Bucket for Elasticsearch backup
 - S3 Bucket for storage of renders and reports
 
 For a detailed guide on setting these up, please see our [docs](https://docs.hava.io) #todo add direct link to guide
 
-### Install
+### HELM Install
 
 To install Hava in your own environment you need a commercial license and a configuration file (see example bellow).
 If you don't have a license, please reach out to us on https://www.hava.io to get a license.
