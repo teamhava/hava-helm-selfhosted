@@ -35,6 +35,10 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/hava/bin/hava"]
         args: ["exec", "import"]
+        volumeMounts:
+        - name: license
+          mountPath: /hava/license
+          readOnly: true
         resources:
           requests:
             cpu: {{ .Values.import.cpu}}
@@ -94,3 +98,10 @@ spec:
             secretKeyRef:
               name: {{ include "hava.fullname" . }}-secrets
               key: "smtp-email-pass"
+      volumes:
+      - name: license
+        secret:
+          secretName: {{ include "hava.fullname" . }}-license
+          items:
+          - key: license
+            path: license

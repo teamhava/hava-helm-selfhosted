@@ -35,6 +35,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolxicy }}
           command: ["/hava/bin/hava"]
           args: ["exec", "report"]
+          volumeMounts:
+          - name: license
+            mountPath: /hava/license
+            readOnly: true
           resources:
             requests:
               cpu: {{ .Values.report.cpu}}
@@ -94,13 +98,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "hava.fullname" . }}-secrets
                   key: "smtp-email-pass"
-            - name: SENDGRID_API_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "hava.fullname" . }}-secrets
-                  key: "sendgrid-api-pass"
-            - name: STRIPE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "hava.fullname" . }}-secrets
-                  key: "stripe-api-key"
+      volumes:
+      - name: license
+        secret:
+          secretName: {{ include "hava.fullname" . }}-license
+          items:
+          - key: license
+            path: license

@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 data:
-  ENVIRONMENT: {{ .Values.environment.type | quote }}
   NAME: {{ include "hava.fullname" . | quote }}
+  LICENCE_FILE: /hava/license/license
 
   AUTO_SYNC_ENABLED: "true"
   AUTO_SYNC: {{ .Values.import.auto_sync.enabled | quote }}

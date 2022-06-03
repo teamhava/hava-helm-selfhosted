@@ -3,16 +3,16 @@
 # Declare variables to be passed into your templates.
 
 setup:
-  default_user: hava
-  default_email: hava@example.com
+  license_user: hava
+  license_email: tom@hava.io
+  license: 
 
 environment:
-  type: "bob"
   domain: "example.com"
 
 image:
   repository: hava/self-hosted
-  tag: 2.0.237
+  tag: 2.0.244
   pullPolicy: IfNotPresent
 
 web:
@@ -110,7 +110,7 @@ assets:
   cdn: "app.example.com"
 
 database:
-  host: "hava2.cxouiktzim2e.us-east-1.rds.amazonaws.com"
+  host: "hava5.cxouiktzim2e.us-east-1.rds.amazonaws.com"
   port: 5432
   user: "postgres"
   password: "havahava"

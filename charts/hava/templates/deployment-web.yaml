@@ -28,6 +28,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/hava/bin/hava"]
           args: ["exec", "web"]
+          volumeMounts:
+          - name: license
+            mountPath: /hava/license
+            readOnly: true
           resources:
             requests:
               cpu: {{ .Values.web.cpu }}
@@ -121,3 +125,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+      - name: license
+        secret:
+          secretName: {{ include "hava.fullname" . }}-license
+          items:
+          - key: license
+            path: license
