@@ -5,6 +5,8 @@
 
 This chart provides an automated way to deploy and upgrade Hava.io in your own AWS environment
 
+> :warning: This chart is in alpha state and in active development. It is not ready for use in production
+
 A detailed step by step install and configuration guides can be found in our [docs](https://docs.hava.io) #todo add direct link to guide
 
 This file gives a high level overview of the chart and how to use it only.
