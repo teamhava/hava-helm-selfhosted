@@ -66,6 +66,8 @@ data:
   REDIS_URL: "redis://{{ include "hava.fullname" . }}-redis:6379"
   {{- end }}
 
+  WEBSOCKET_URL: "http://hava:hava@{{ include "hava.websocketHostName" . }}:80/apps/1"
+
   # Puma
   WEB_CONCURRENCY: {{.Values.web.concurrency | quote}}
   WEB_THREADS: {{.Values.web.threads | quote}}
@@ -99,8 +101,7 @@ data:
   # Report config
   CLOUDMAPPER_PATH: {{ .Values.report.cloudmapper_path | quote }}
 
-  # Assets
-  ASSETS_CDN: {{ .Values.assets.cdn | quote }}
+  
 
   # Share and embed config - port is 443
   EMBEDDABLE_TYPE: "cloudfront"

@@ -38,5 +38,7 @@ spec:
       storageClassName: "hava-ssd"
       resources:
         requests:
+          cpu: "100m"
+          memory: "128M"
           storage: 4Gi
 {{- end }}

@@ -59,3 +59,15 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "hava.webHostName" -}}
+{{- printf  "%s.%s" .Values.environment.web_subdomain .Values.environment.domain }}
+{{- end }}
+
+{{- define "hava.apiHostName" -}}
+{{- printf  "%s.%s" .Values.environment.web_subdomain .Values.environment.domain }}
+{{- end }}
+
+{{- define "hava.websocketHostName" -}}
+{{- printf  "%s.%s" .Values.environment.websocket_subdomain .Values.environment.domain }}
+{{- end }}

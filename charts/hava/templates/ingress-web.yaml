@@ -25,5 +25,35 @@ spec:
       name: {{ include "hava.fullname" . }}-web
       port: 
         number: 9700
-        
+  rules:
+    - host: {{ include "hava.webHostName" . }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-web
+              port:
+                number: 9700
+    - host: {{ include "hava.websocketHostName" . }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-websocket
+              port:
+                number: 9701
+    - host: {{ include "hava.apiHostName" . }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-web
+              port:
+                number: 9700
 {{- end }}

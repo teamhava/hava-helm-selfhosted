@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "hava.fullname" . }}-web
+  name: {{ include "hava.fullname" . }}-websocket
   labels:
-    app.kubernetes.io/name: {{ include "hava.name" . }}-web
+    app.kubernetes.io/name: {{ include "hava.name" . }}-websocket
     helm.sh/chart: {{ include "hava.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.web.replicas }}
+  replicas: {{ .Values.websocket.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "hava.name" . }}-web
+      app.kubernetes.io/name: {{ include "hava.name" . }}-websocket
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
@@ -19,7 +19,7 @@ spec:
         checksum.helm.kubernetes.io/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
         checksum.helm.kubernetes.io/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
-        app.kubernetes.io/name: {{ include "hava.name" . }}-web
+        app.kubernetes.io/name: {{ include "hava.name" . }}-websocket
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
@@ -27,16 +27,16 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/hava/bin/hava"]
-          args: ["exec", "web"]
+          args: ["exec", "websocket"]
           volumeMounts:
           - name: license
             mountPath: /hava/license
             readOnly: true
           resources:
             requests:
-              cpu: {{ .Values.web.cpu }}
+              cpu: {{ .Values.websocket.cpu }}
             limits:
-              memory: {{ .Values.web.memory}}
+              memory: {{ .Values.websocket.memory}}
           envFrom:
           - configMapRef:
               name: {{ include "hava.fullname" . }}-environment
@@ -103,19 +103,8 @@ spec:
                 key: "embed-signing-key"
           ports:
             - name: http
-              containerPort: 9700
-              protocol: TCP
-            - name: websocket
               containerPort: 9701
               protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /health_check
-              port: 9700
-            periodSeconds: 10
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 10
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

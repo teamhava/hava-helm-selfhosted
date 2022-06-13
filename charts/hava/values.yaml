@@ -9,6 +9,10 @@ setup:
 
 environment:
   domain: "example.com"
+  web_subdomain: "app"
+  api_subdomain: "api"
+  websocket_subdomain: "notify" # sub domain for websocket
+  ssl: false
 
 image:
   repository: hava/self-hosted
@@ -16,12 +20,12 @@ image:
   pullPolicy: IfNotPresent
 
 web:
-  replicas: 1
+  replicas: 2
   concurrency: 2
   pool: 5
   threads: 2
   lifetime: 1440
-  cpu: 300m
+  cpu: 100m
   memory: 1024M
   secret_key: "example"
   icons:
@@ -33,12 +37,21 @@ web:
     # enabled default ingress, set to false to configure different ingress, e.g. gloo nginx
     enable: true
 
+websocket:
+  replicas: 1
+  concurrency: 2
+  pool: 5
+  threads: 2
+  lifetime: 1440
+  cpu: 100m
+  memory: 512M
+
 import:
   replicas: 1
   concurrency: 2
   pool: 40
   lifetime: 9000
-  cpu: 300m
+  cpu: 100m
   memory: 1536M
   auto_sync:
     enabled: true
@@ -59,7 +72,7 @@ build:
   lifetime: 1440
   pool: 40
   replicas: 1
-  cpu: 300m
+  cpu: 100m
   memory: 1024M
 
 clock:
@@ -67,7 +80,7 @@ clock:
   lifetime: 1440
   pool: 40
   replicas: 1
-  cpu: 300m
+  cpu: 100m
   memory: 1024M
 
 render:
@@ -75,7 +88,7 @@ render:
   lifetime: 1440
   pool: 40
   replicas: 1
-  cpu: 300m
+  cpu: 100m
   memory: 1024M
   aws:
     access_key: "example"
@@ -88,7 +101,7 @@ worker:
   lifetime: 1440
   pool: 40
   replicas: 1
-  cpu: 300m
+  cpu: 100m
   memory: 1024M
 
 report:
@@ -96,7 +109,7 @@ report:
   lifetime: 1440
   pool: 40
   replicas: 1
-  cpu: 300m
+  cpu: 100m
   memory: 1024M
   cloudmapper_path: "example"
 
@@ -105,9 +118,6 @@ maintenance:
   lifetime: 1440
   pool: 40
   replicas: 1
-
-assets:
-  cdn: "app.example.com"
 
 database:
   host: "hava5.cxouiktzim2e.us-east-1.rds.amazonaws.com"
@@ -151,6 +161,11 @@ elasticsearch:
   image: hava/elasticsearch
   imageTag: 6.8-s3-backup
   backup_bucket_name: hava-elasticsearch-backup
+  resources:
+    requests:
+      cpu: "500m"
+  rbac:
+    create: true # create a service account as part of the elasticsearch chart
   volumeClaimTemplate:
     storageClassName: hava-ssd
     resources:
