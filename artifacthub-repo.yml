@@ -10,3 +10,6 @@
 # NOT apply to ownership claim operations, which are processed immediately.
 #
 repositoryID: 44d94c2a-65d1-420e-b61b-4f917589fa0c
+owners:
+  - name: Thomas Winsnes
+    email: tom@hava.io
