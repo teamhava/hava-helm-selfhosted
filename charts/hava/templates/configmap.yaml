@@ -110,3 +110,14 @@ data:
   SMTP_DOMAIN: {{ .Values.email.smtp.domain | quote }}
   EMAIL_FROM_ADDRESS: {{ .Values.email.smtp.from_address | quote }}
   EMAIL_FROM_NAME: {{ .Values.email.smtp.from_name | quote }}
+
+  {{ if .Values.environment.cors_hosts }}
+  CORS_HOSTS: {{ .Values.environment.cors_hosts | quote }}
+  {{ end }}
+
+  {{ if .Values.environment.auth0.enabled }}
+  AUTH0_ENABLED: "true"
+  AUTH0_HOST: {{ .Values.environment.auth0.host | quote }}
+  AUTH0_ID: {{ .Values.environment.auth0.id | quote }}
+  AUTH0_CONNECTION: {{ .Values.environment.auth0.connection | quote }}
+  {{ end }}

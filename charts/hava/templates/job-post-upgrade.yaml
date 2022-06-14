@@ -32,6 +32,10 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/bin/sh", "-c"]
         args: ["hava exec rake db:migrate"]
+        volumeMounts:
+          - name: license
+            mountPath: /hava/license
+            readOnly: true
         envFrom:
         - configMapRef:
             name: {{ include "hava.fullname" . }}-environment
@@ -51,3 +55,10 @@ spec:
             configMapKeyRef:
               name: {{ include "hava.fullname" . }}-environment
               key: "ELASTICSEARCH_URL"
+      volumes:
+      - name: license
+        secret:
+          secretName: {{ include "hava.fullname" . }}-license
+          items:
+          - key: license
+            path: license

@@ -31,6 +31,10 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/bin/sh", "-c"]
+        volumeMounts:
+          - name: license
+            mountPath: /hava/license
+            readOnly: true
         args: ["hava exec rake db:setup && hava exec rake es:index && hava accounts setup {{ .Values.setup.license_user }} {{ .Values.setup.license_email }} && curl -X PUT \"http://elasticsearch-master:9200/_snapshot/s3_backups?pretty\" -H 'Content-Type: application/json' -d'{ \"type\": \"s3\", \"settings\": { \"bucket\": \"{{ required "The backup bucket for Elasticsearch needs to be configured. Please set the elasticsearch.backup.bucket_name value in the configuration file." .Values.elasticsearch.backup.bucket_name }}\" } }'"]
         resources:
           requests:
@@ -56,3 +60,10 @@ spec:
             configMapKeyRef:
               name: {{ include "hava.fullname" . }}-environment
               key: "ELASTICSEARCH_URL"
+      volumes:
+      - name: license
+        secret:
+          secretName: {{ include "hava.fullname" . }}-license
+          items:
+          - key: license
+            path: license

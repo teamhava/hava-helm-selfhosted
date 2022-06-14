@@ -39,58 +39,52 @@ helm install <your release name> hava/hava --set-file license=<path to licensefi
 ```yaml
 setup:
   license_user: hava
-  license_email: admin@hava.io #replace with the email in your license
+  license_email: admin@example.com #replace with the email in your license
 
 environment:
-  domain: "example.com"
+  domain: "example.com" #replace with your domain
+  ## uncomment and change to use different subdomain than the defaults
+  # web_subdomain: "app"
+  # api_subdomain: "api"
+  # websocket_subdomain: "notify"
 
 database:
-  host: "localhost"
-  port: 5432
-  user: "postgres"
-  password: "example"
+  host: "" # insert postgres endpoint url
+  port: 5432 # update if port is different from default
+  user: "" # insert the master user for the RDS instance
+  password: "" # insert the master password for the RDS instance
 
 email: 
-  smtp:
-    user: "example"
-    pass: "example"
-    port: 53
-    domain: "example.com"
-    address: "example.com"
+  smtp: # see Email section in the configuration docs
+    user: ""
+    pass: ""
+    port: 25
+    domain: ""
+    endpoint: ""
     from_address: "noreply@example.com"
     from_name: "No Reply"
 
 render:
-   aws:
-    access_key: "example"
-    bucket: "example"
-    region: "example"
-    secret_key: "example"
+   aws: # see the S3 buckets optional guide for help with setting up the bucket and user
+    access_key: "" # insert the access key id for a user with access to the cache s3 bucket
+    secret_key: "" # insert the secret key for the user with access to the cache s3 bucket
+    bucket: "" # update with the name of the cache bucket
+    region: "" # update with the region the cache bucket is deployed to
 
 import:
-  azure:
-    client_id: "example"
-    subscription_id: "example"
-    tenant_id: "example"
-    secret_key: "example"
-  aws:
-    account_id: "example"
-    access_key: "example"
-    secret_key: "example"
+  aws: # credentials for the user that is used for cross account access in AWS
+    account_id: ""
+    access_key: ""
+    secret_key: ""
 
 web:
-  secret_key: "example"
-  icons:
-    scheme: http
-    host: app.example.com
-    port: 80 
-    path: /tmp
-
-assets:
-  cdn: "app.example.com"
+  secret_key: "" # insert a key for encryption of data 
 
 elasticsearch:
-  backup_bucket_name: hava-elasticsearch-backup
+  backup:
+    access_key: "" # insert the access key id for the user with access to the cache s3 bucket
+    secret_key: "" # insert the secret key for the user with access to the cache s3 bucket
+    bucket_name: "" # insert the name of your s3 backup bucket for Elastic search
 ```
 
 # Dependencies

@@ -13,10 +13,17 @@ environment:
   api_subdomain: "api"
   websocket_subdomain: "notify" # sub domain for websocket
   ssl: false
+  cors_hosts:
+  auth0:
+    enabled:
+    host:
+    id:
+    connection:
+
 
 image:
   repository: hava/self-hosted
-  tag: 2.0.244
+  tag: 2.0.254
   pullPolicy: IfNotPresent
 
 web:
@@ -25,7 +32,7 @@ web:
   pool: 5
   threads: 2
   lifetime: 1440
-  cpu: 100m
+  cpu: 200m
   memory: 1024M
   secret_key: "example"
   icons:
@@ -43,7 +50,7 @@ websocket:
   pool: 5
   threads: 2
   lifetime: 1440
-  cpu: 100m
+  cpu: 200m
   memory: 512M
 
 import:
@@ -51,7 +58,7 @@ import:
   concurrency: 2
   pool: 40
   lifetime: 9000
-  cpu: 100m
+  cpu: 200m
   memory: 1536M
   auto_sync:
     enabled: true
