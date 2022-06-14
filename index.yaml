@@ -93,4 +93,28 @@ entries:
     urls:
     - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-0.1.0/hava-0.1.0.tgz
     version: 0.1.0
-generated: "2022-06-14T06:52:35.33270008Z"
+  hava-self-hosted:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-06-14T07:13:15.407509899Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      tags:
+      - elasticsearch
+      version: 6.8.13
+    - condition: elasticsearch.enabled
+      name: kibana
+      repository: https://helm.elastic.co
+      tags:
+      - kibana
+      version: 6.8.13
+    description: A Helm chart for Self-Hosted Hava.io
+    digest: 56775bdd8bdba9b706df79634ff8ec36615d7a37ce4225c23eab48a79e9e62ab
+    name: hava-self-hosted
+    type: application
+    urls:
+    - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-0.3.2/hava-self-hosted-0.3.2.tgz
+    version: 0.3.2
+generated: "2022-06-14T07:13:15.4075268Z"
