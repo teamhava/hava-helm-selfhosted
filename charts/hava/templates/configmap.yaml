@@ -17,9 +17,6 @@ data:
   AUTO_SYNC_MINUTES: {{ .Values.import.auto_sync.minutes | quote }}
 
   PROVIDER_AZURE_ENABLED: "true"
-  AZURE_CLIENT_ID: {{ .Values.import.azure.client_id | quote }}
-  AZURE_SUBSCRIPTION_ID: {{ .Values.import.azure.subscription_id | quote }}
-  AZURE_TENANT_ID: {{ .Values.import.azure.tenant_id | quote }}
 
   PROVIDER_AWS_CAR_ENABLED: "true"
   CAR_ACCOUNT_ID: {{ .Values.import.aws.account_id | quote }}
@@ -108,7 +105,7 @@ data:
 
   # Email
   SMTP_USER: {{ .Values.email.smtp.user | quote }}
-  SMTP_ADDRESS: {{ .Values.email.smtp.address | quote }}
+  SMTP_ADDRESS: {{ .Values.email.smtp.endpoint | quote }}
   SMTP_PORT: {{ .Values.email.smtp.port | quote }}
   SMTP_DOMAIN: {{ .Values.email.smtp.domain | quote }}
   EMAIL_FROM_ADDRESS: {{ .Values.email.smtp.from_address | quote }}
