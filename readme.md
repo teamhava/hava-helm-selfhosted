@@ -77,14 +77,19 @@ import:
     access_key: ""
     secret_key: ""
 
-web:
-  secret_key: "" # insert a key for encryption of data 
-
 elasticsearch:
   backup:
     access_key: "" # insert the access key id for the user with access to the cache s3 bucket
     secret_key: "" # insert the secret key for the user with access to the cache s3 bucket
     bucket_name: "" # insert the name of your s3 backup bucket for Elastic search
+
+encryption:
+  ## used to encrypt values stored in the database
+  iv: # openssl rand -hex 8
+  key: # openssl rand -hex 48
+
+  ## used to encrypt cookies
+  web_key: # openssl rand -hex 48
 ```
 
 # Dependencies

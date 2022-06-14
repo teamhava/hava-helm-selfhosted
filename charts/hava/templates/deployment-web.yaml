@@ -91,11 +91,11 @@ spec:
               secretKeyRef:
                 name: {{ include "hava.fullname" . }}-secrets
                 key: "smtp-email-pass"
-          - name: GOOGLE_PRIVATE_KEY
+          - name: SECRET_KEY
             valueFrom:
               secretKeyRef:
                 name: {{ include "hava.fullname" . }}-secrets
-                key: "gcp-private-key"
+                key: "web-secret-key"
           - name: EMBEDDABLE_SIGNING_KEY
             valueFrom:
               secretKeyRef:

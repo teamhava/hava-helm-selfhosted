@@ -34,7 +34,6 @@ web:
   lifetime: 1440
   cpu: 200m
   memory: 1024M
-  secret_key: "example"
   icons:
     scheme: http
     host: app.example.com
@@ -132,10 +131,6 @@ database:
   user: "postgres"
   password: "havahava"
 
-embed:
-  signing_key: "example"
-
-
 email: 
   smtp:
     user: "example"
@@ -145,9 +140,6 @@ email:
     address: "example.com"
     from_address: "noreply@example.com"
     from_name: "No Reply"
-
-gcp:
-  private_key: "example"
 
 cache:
   ## set to false if hosting redis externally. e.g. memstore paas
@@ -188,5 +180,9 @@ elasticsearch:
         storage: 200Gi
 
 encryption:
-  iv: "iv"
-  key: "key"
+  ## used to encrypt values stored in the database
+  iv: # openssl rand -hex 8
+  key: # openssl rand -hex 48
+
+  ## used to encrypt cookies
+  web_key: # openssl rand -hex 48

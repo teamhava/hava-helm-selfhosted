@@ -98,10 +98,8 @@ data:
   # Report config
   CLOUDMAPPER_PATH: {{ .Values.report.cloudmapper_path | quote }}
 
-  
-
   # Share and embed config - port is 443
-  EMBEDDABLE_TYPE: "cloudfront"
+  EMBEDDABLE_TYPE: "s3"
 
   # Email
   SMTP_USER: {{ .Values.email.smtp.user | quote }}
