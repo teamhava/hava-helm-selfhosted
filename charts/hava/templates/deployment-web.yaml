@@ -91,11 +91,6 @@ spec:
               secretKeyRef:
                 name: {{ include "hava.fullname" . }}-secrets
                 key: "web-secret-key"
-          - name: EMBEDDABLE_SIGNING_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "hava.fullname" . }}-secrets
-                key: "embed-signing-key"
           ports:
             - name: http
               containerPort: 9700
