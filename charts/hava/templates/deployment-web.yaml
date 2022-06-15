@@ -51,11 +51,6 @@ spec:
               configMapKeyRef:
                 name: {{ include "hava.fullname" . }}-environment
                 key: "REDIS_URL"
-          - name: AZURE_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "hava.fullname" . }}-secrets
-                key: "azure-secret-key"
           - name: CAR_USER_SECRET_KEY
             valueFrom:
               secretKeyRef:
