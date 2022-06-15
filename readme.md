@@ -16,7 +16,7 @@ hava` to see the charts.
 To install the hava chart:
 
 ```sh
-helm install hava hava/hava
+helm install hava hava/hava-self-hosted
 ```
 
 To uninstall the chart:
