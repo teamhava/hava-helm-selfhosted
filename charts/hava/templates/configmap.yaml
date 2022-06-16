@@ -30,8 +30,6 @@ data:
 
   DESIGN_SVG_URL: "https://s3-{{ .Values.render.aws.region }}.amazonaws.com/{{ .Values.render.aws.bucket }}"
 
-  AUTH0_ENABLED: "false"
-
   # Application URLs
   HAVA_HOST: "http://app.{{ .Values.environment.domain }}"
   COOKIE_DOMAIN: ".{{ .Values.environment.domain }}"
@@ -92,9 +90,6 @@ data:
   POOL_REPORT: {{ .Values.report.pool | quote }}
   POOL_MAINTENANCE: {{ .Values.maintenance.pool | quote }}
 
-  # CAPTCHA and security
-  RECAPTCHA_ENABLED: "false"
-
   # Report config
   CLOUDMAPPER_PATH: {{ .Values.report.cloudmapper_path | quote }}
 
@@ -114,8 +109,11 @@ data:
   {{ end }}
 
   {{ if .Values.environment.auth0.enabled }}
+  AUTH_TYPE: "auth0"
   AUTH0_ENABLED: "true"
   AUTH0_HOST: {{ .Values.environment.auth0.host | quote }}
   AUTH0_ID: {{ .Values.environment.auth0.id | quote }}
   AUTH0_CONNECTION: {{ .Values.environment.auth0.connection | quote }}
   {{ end }}
+
+  RECAPTCHA_ENABLED: "false"

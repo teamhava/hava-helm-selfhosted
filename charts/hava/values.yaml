@@ -19,6 +19,7 @@ environment:
     host:
     id:
     connection:
+    secret: "dummy"
 
 
 image:
@@ -32,7 +33,7 @@ web:
   pool: 5
   threads: 2
   lifetime: 1440
-  cpu: 200m
+  cpu: 500m
   memory: 1024M
   icons:
     scheme: http
@@ -49,7 +50,7 @@ websocket:
   pool: 5
   threads: 2
   lifetime: 1440
-  cpu: 200m
+  cpu: 500m
   memory: 512M
 
 import:
@@ -94,8 +95,8 @@ render:
   lifetime: 1440
   pool: 40
   replicas: 1
-  cpu: 100m
-  memory: 1024M
+  cpu: 250m
+  memory: 2048M
   aws:
     access_key: "example"
     bucket: "example"

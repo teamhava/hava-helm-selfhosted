@@ -91,12 +91,14 @@ spec:
               secretKeyRef:
                 name: {{ include "hava.fullname" . }}-secrets
                 key: "web-secret-key"
+          - name: AUTH0_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "hava.fullname" . }}-secrets
+                key: "auth0-secret"
           ports:
             - name: http
               containerPort: 9700
-              protocol: TCP
-            - name: websocket
-              containerPort: 9701
               protocol: TCP
           readinessProbe:
             httpGet:
