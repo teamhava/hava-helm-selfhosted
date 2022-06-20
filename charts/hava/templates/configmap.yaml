@@ -31,11 +31,23 @@ data:
   DESIGN_SVG_URL: "https://s3-{{ .Values.render.aws.region }}.amazonaws.com/{{ .Values.render.aws.bucket }}"
 
   # Application URLs
-  HAVA_HOST: "http://app.{{ .Values.environment.domain }}"
+  {{ if eq .Values.environment.ssl "true" }}
+  HAVA_HOST: "https://{{ .Values.environment.web_subdomain }}.{{ .Values.environment.domain }}"
+  {{ else }}
+  HAVA_HOST: "http://{{ .Values.environment.web_subdomain }}.{{ .Values.environment.domain }}"
+  {{ end }}
   COOKIE_DOMAIN: ".{{ .Values.environment.domain }}"
+  {{ if eq .Values.environment.ssl "true" }}
+  API_SCHEME: "https"
+  {{ else }}
   API_SCHEME: "http"
-  API_HOST: "api.{{ .Values.environment.domain }}"
+  {{ end }}
+  API_HOST: "{{ .Values.environment.api_subdomain}}.{{ .Values.environment.domain }}"
+  {{ if eq .Values.environment.ssl "true" }}
+  API_PORT: "443"
+  {{ else }}
   API_PORT: "80"
+  {{ end }}
   API_PATH: "/"
   ICONS_SCHEME: {{ .Values.web.icons.scheme | quote }}
   ICONS_HOST: {{ .Values.web.icons.host | quote }}
@@ -61,7 +73,11 @@ data:
   REDIS_URL: "redis://{{ include "hava.fullname" . }}-redis:6379"
   {{- end }}
 
+  {{ if eq .Values.environment.ssl "true" }}
+  WEBSOCKET_URL: "https://hava:hava@{{ include "hava.websocketHostName" . }}:443/apps/1"
+  {{ else }}
   WEBSOCKET_URL: "http://hava:hava@{{ include "hava.websocketHostName" . }}:80/apps/1"
+  {{ end }}
 
   # Puma
   WEB_CONCURRENCY: {{.Values.web.concurrency | quote}}

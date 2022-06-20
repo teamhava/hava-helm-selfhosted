@@ -18,6 +18,16 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '10'
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/success-codes: 200,404
+    {{ if eq .Values.environment.ssl "true" }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.web.ingress.acm_cert_arn | quote }}
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    {{ else }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    {{ end }}
 spec:
   ingressClassName: aws-load-balancer
   defaultBackend:

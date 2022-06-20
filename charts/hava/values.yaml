@@ -12,7 +12,7 @@ environment:
   web_subdomain: "app"
   api_subdomain: "api"
   websocket_subdomain: "notify" # sub domain for websocket
-  ssl: false
+  ssl: "false"
   cors_hosts:
   auth0:
     enabled:
@@ -43,6 +43,7 @@ web:
   ingress:
     # enabled default ingress, set to false to configure different ingress, e.g. gloo nginx
     enable: true
+    acm_cert_arn: ""
 
 websocket:
   replicas: 1
