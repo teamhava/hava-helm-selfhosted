@@ -24,24 +24,25 @@ environment:
 
 image:
   repository: hava/self-hosted
-  tag: 2.0.254
+  tag: 2.0.349
   pullPolicy: IfNotPresent
 
 web:
-  replicas: 2
+  replicas: 1
   concurrency: 2
   pool: 5
   threads: 2
+  persistent_timeout: 75 # AWS ALB defaults to 60, needs to be 60 + timeout value
   lifetime: 1440
   cpu: 500m
-  memory: 1024M
+  memory: 2048M
   icons:
     scheme: http
     host: app.example.com
     port: 80 
     path: /tmp
   ingress:
-    # enabled default ingress, set to false to configure different ingress, e.g. gloo nginx
+    # enabled default ingress, set to false to configure different ingress, e.g. gloo or nginx
     enable: true
     acm_cert_arn: ""
 
@@ -51,8 +52,8 @@ websocket:
   pool: 5
   threads: 2
   lifetime: 1440
-  cpu: 500m
-  memory: 512M
+  cpu: 100m
+  memory: 256M
 
 import:
   replicas: 1
@@ -119,7 +120,6 @@ report:
   replicas: 1
   cpu: 100m
   memory: 1024M
-  cloudmapper_path: "example"
 
 maintenance:
   concurrency: 2
@@ -174,12 +174,19 @@ elasticsearch:
       path: s3.client.default.secret_key
   resources:
     requests:
+      cpu: "250m"
+      memory: "1536M"
+    limits:
       cpu: "500m"
+      memory: "1536M"
   volumeClaimTemplate:
     storageClassName: hava-ssd
     resources:
       requests:
         storage: 200Gi
+
+kibana:
+  replicas: 0
 
 encryption:
   ## used to encrypt values stored in the database

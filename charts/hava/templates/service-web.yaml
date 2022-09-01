@@ -3,6 +3,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "hava.fullname" . }}-web
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /health_check
+    alb.ingress.kubernetes.io/success-codes: '200'
   labels:
     app.kubernetes.io/name: {{ include "hava.name" . }}-web
     helm.sh/chart: {{ include "hava.chart" . }}

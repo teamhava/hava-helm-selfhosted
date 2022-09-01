@@ -41,6 +41,8 @@ spec:
           - configMapRef:
               name: {{ include "hava.fullname" . }}-environment
           env:
+          - name: PERSISTENT_TIMEOUT
+            value: {{ .Values.web.persistent_timeout | quote }}
           - name: DATABASE_URL
             valueFrom:
               configMapKeyRef:

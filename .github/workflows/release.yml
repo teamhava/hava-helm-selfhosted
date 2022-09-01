@@ -14,6 +14,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Copy license and readme to chart
+        run: |
+          cp readme.md charts/hava/README.md
+          cp LICENSE charts/hava/LICENSE
+
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
