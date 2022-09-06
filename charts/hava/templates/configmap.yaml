@@ -129,12 +129,5 @@ data:
   AUTH0_CONNECTION: {{ .Values.environment.auth0.connection | quote }}
   {{ end }}
 
-  # RECAPTCHA_ENABLED: "false"
-
-  ### Remove after testing!
-  STRIPE_ENABLED: "true"
-  STRIPE_API_KEY: sk_test_HFaq3Yg0frc3gnq3H3hHFQgx
-
-  RECAPTCHA_ENABLED: "true"
-  RECAPTCHA_SITE_KEY: "6Lf1r84UAAAAAMrCzpERTnBrVIq0S60YOXAGtWLc"
-  RECAPTCHA_SECRET_KEY: "6Lf1r84UAAAAAMSIC0FG9QbiUwyTvXCd5PKW9v2b"
+  RECAPTCHA_ENABLED: "false"
+  

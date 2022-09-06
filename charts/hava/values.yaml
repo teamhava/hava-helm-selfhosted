@@ -128,7 +128,7 @@ maintenance:
   replicas: 1
 
 database:
-  host: "hava5.cxouiktzim2e.us-east-1.rds.amazonaws.com"
+  host: "example"
   port: 5432
   user: "postgres"
   password: "havahava"
