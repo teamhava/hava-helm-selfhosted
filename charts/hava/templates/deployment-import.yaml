@@ -24,6 +24,7 @@ spec:
     metadata:
       annotations:
         checksum.helm.kubernetes.io/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        checksum.helm.kubernetes.io/secret2: {{ include (print $.Template.BasePath "/secret-license.yml") . | sha256sum }}
         checksum.helm.kubernetes.io/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "hava.name" . }}-import
