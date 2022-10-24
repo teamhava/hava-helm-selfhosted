@@ -24,7 +24,7 @@ environment:
 
 image:
   repository: hava/self-hosted
-  tag: 2.0.349
+  tag: 2.0.433
   pullPolicy: IfNotPresent
 
 web:
