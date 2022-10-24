@@ -7,6 +7,34 @@ entries:
         - Updated to lasted version of Hava
         - Tweaked the resoruce requiremnts for individual deployments
     apiVersion: v2
+    appVersion: 2.0.433
+    created: "2022-10-24T01:10:12.225915146Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      tags:
+      - elasticsearch
+      version: 6.8.22
+    - condition: elasticsearch.enabled
+      name: kibana
+      repository: https://helm.elastic.co
+      tags:
+      - kibana
+      version: 6.8.22
+    description: A Helm chart for Self-Hosted Hava.io
+    digest: 0155176a7a198d49501e07c96e814392e758e305c2bcf0d3b46f6ed7b41f86b3
+    name: hava-self-hosted
+    type: application
+    urls:
+    - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-0.6.0/hava-self-hosted-0.6.0.tgz
+    version: 0.6.0
+  - annotations:
+      artifactub.io/changes: |-
+        - Deployments will now automatically rotate when the license file is updated
+        - Updated to lasted version of Hava
+        - Tweaked the resoruce requiremnts for individual deployments
+    apiVersion: v2
     appVersion: 2.0.349
     created: "2022-10-20T00:48:15.424241258Z"
     dependencies:
@@ -202,4 +230,4 @@ entries:
     urls:
     - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-0.3.2/hava-self-hosted-0.3.2.tgz
     version: 0.3.2
-generated: "2022-10-20T00:48:15.424279258Z"
+generated: "2022-10-24T01:10:12.225986447Z"
