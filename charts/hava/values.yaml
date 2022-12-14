@@ -24,7 +24,7 @@ environment:
 
 image:
   repository: hava/self-hosted
-  tag: 2.1.527
+  tag: 2.1.531
   pullPolicy: IfNotPresent
 
 web:
@@ -195,3 +195,9 @@ encryption:
 
   ## used to encrypt cookies
   web_key: # openssl rand -hex 48
+
+aws:
+  # Set to a comma delimited list of regions to support, i.e. us-west-1,us-west-2. If blank it will import all regions.
+  regions:
+  # Set to false if you don't allow govcloud data to be imported
+  govcloud_enabled: true

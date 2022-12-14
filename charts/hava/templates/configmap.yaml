@@ -130,4 +130,10 @@ data:
   {{ end }}
 
   RECAPTCHA_ENABLED: "false"
-  
+  # AWS
+  {{ if .Values.aws.regions }}
+  AWS_REGIONS: {{ .Values.aws.regions | quote }}
+  {{ end }}
+  {{ if .Values.aws.govcloud_enabled }}
+  AWS_GOVCLOUD_SUPPORT: "true"
+  {{ end }}
