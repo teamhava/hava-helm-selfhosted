@@ -6,6 +6,35 @@ entries:
         - Deployments will now automatically rotate when the license file is updated
         - Updated to lasted version of Hava
         - Tweaked the resoruce requiremnts for individual deployments
+        - Added ability to change name of database
+    apiVersion: v2
+    appVersion: 2.1.531
+    created: "2023-01-31T10:06:18.136890804Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      tags:
+      - elasticsearch
+      version: 6.8.22
+    - condition: elasticsearch.enabled
+      name: kibana
+      repository: https://helm.elastic.co
+      tags:
+      - kibana
+      version: 6.8.22
+    description: A Helm chart for Self-Hosted Hava.io
+    digest: 371f35c23b525adb1177c5b9b25e8c82f4b12034caf1ed90279ed86147407c44
+    name: hava-self-hosted
+    type: application
+    urls:
+    - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-0.6.3/hava-self-hosted-0.6.3.tgz
+    version: 0.6.3
+  - annotations:
+      artifactub.io/changes: |-
+        - Deployments will now automatically rotate when the license file is updated
+        - Updated to lasted version of Hava
+        - Tweaked the resoruce requiremnts for individual deployments
     apiVersion: v2
     appVersion: 2.1.531
     created: "2022-12-14T23:07:01.90799662Z"
@@ -286,4 +315,4 @@ entries:
     urls:
     - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-0.3.2/hava-self-hosted-0.3.2.tgz
     version: 0.3.2
-generated: "2022-12-14T23:07:01.908322025Z"
+generated: "2023-01-31T10:06:18.137032212Z"
