@@ -62,9 +62,9 @@ data:
   {{- end }}
 
   {{- if .Values.database.host }}
-  DATABASE_URL: "postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/hava"
+  DATABASE_URL: "postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}"
   {{- else }}
-  DATABASE_URL: "postgres://hava:hava@{{ include "hava.fullname" . }}-db:5432/hava"
+  DATABASE_URL: "postgres://hava:hava@{{ include "hava.fullname" . }}-db:5432/{{ .Values.database.name }}"
   {{- end }}
 
   {{- if .Values.cache.host }}

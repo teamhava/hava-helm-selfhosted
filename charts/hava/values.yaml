@@ -132,6 +132,7 @@ database:
   port: 5432
   user: "postgres"
   password: "havahava"
+  name: "hava"
 
 email: 
   smtp:
