@@ -1,3 +1,4 @@
+{{- if .Values.elasticsearch.backup.enabled }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -14,3 +15,4 @@ spec:
             command: ["/bin/sh", "-c"]
             args: [ "curl -X PUT \"http://elasticsearch-master:9200/_snapshot/s3_backups/%3Csnapshot-%7Bnow%2Fd%7D%3E?pretty\"" ]
           restartPolicy: OnFailure
+{{- end }}

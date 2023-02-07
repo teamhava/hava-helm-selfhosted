@@ -163,6 +163,7 @@ elasticsearch:
   image: hava/elasticsearch
   imageTag: 6.8-s3-backup-1.0.6
   backup:
+    enabled: true
     bucket_name:
     access_key:
     secret_key:
