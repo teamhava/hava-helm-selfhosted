@@ -49,10 +49,6 @@ data:
   API_PORT: "80"
   {{ end }}
   API_PATH: "/"
-  ICONS_SCHEME: {{ .Values.web.icons.scheme | quote }}
-  ICONS_HOST: {{ .Values.web.icons.host | quote }}
-  ICONS_PORT: {{ .Values.web.icons.port | quote }}
-  ICONS_PATH: {{ .Values.web.icons.path | quote }}
 
   # Connection URLs (contains secrets 🤫)
   {{- if .Values.elasticsearch.host }}

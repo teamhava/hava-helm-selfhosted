@@ -8,12 +8,22 @@ setup:
   license: 
 
 environment:
+  # dns domain the end user will connect on to access hava, e.g. hava.io 
+  # this is used for cors, to it needs to match
   domain: "example.com"
+  # The subdomain that the app runs on, default is 'app' which will set up the application on e.g. app.hava.io if hava.io is set as the domain
   web_subdomain: "app"
+  # the subdomain that the api runs on, defauilt is 'api' which will set up the api on e.g. api.hava.io if hava.io is set as the domain
+  # this can be the same as the web subdomain
   api_subdomain: "api"
-  websocket_subdomain: "notify" # sub domain for websocket
+  # the subdomain that the notification endpoint runs on, defauilt is 'notify' which will set up the notify on e.g. notify.hava.io if hava.io is set as the domain
+  websocket_subdomain: "notify"
+  # used to enable or disable ssl for the endpoints. If set to true, ingress needs to be configured with a valid ssl certificate
   ssl: "false"
+  # This is used to add additional allowed sources for CORS, needs to be fully qualified domains including protocol and port. e.g. 'https://qa.hava.io:9700'
+  # Format is a comma separated string "https://qa.hava.io:9700,https://dev.hava.io:9700"
   cors_hosts:
+  # This block is for enabling auth0 for managing user credentials, please reach out to hava support on details on how to configure this
   auth0:
     enabled:
     host:
@@ -21,128 +31,188 @@ environment:
     connection:
     secret: "dummy"
 
-
+# This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
 image:
   repository: hava/self-hosted
   tag: 2.1.531
   pullPolicy: IfNotPresent
 
+# This block configures the web and api pods
 web:
+  # Number of pods to run in parallel 
   replicas: 1
+  # Used for performance tuning of the web instance
   concurrency: 2
   pool: 5
   threads: 2
-  persistent_timeout: 75 # AWS ALB defaults to 60, needs to be 60 + timeout value
   lifetime: 1440
+  # AWS ALB defaults to 60, needs to be 60 + timeout value
+  persistent_timeout: 75 
+  # CPU and memory limits of the pods, increase to scale the pods vertically
   cpu: 500m
   memory: 2048M
-  icons:
-    scheme: http
-    host: app.example.com
-    port: 80 
-    path: /tmp
+  
   ingress:
     # enabled default ingress, set to false to configure different ingress, e.g. gloo or nginx
     enable: true
+    # add cert ARN here if ssl is set to true in environment
     acm_cert_arn: ""
-
+# This block configures the notify pods
 websocket:
+  # Number of pods to run in parallel 
   replicas: 1
+  # Used for performance tuning of the websocket instance
   concurrency: 2
   pool: 5
   threads: 2
   lifetime: 1440
+  #CPU and memory limits of the pods, increase to scale the pods vertically
   cpu: 100m
   memory: 256M
 
+# This block configures the import pods
 import:
+  # Number of pods to run in parallel
   replicas: 1
+  # Used for performance tuning of the import pods
   concurrency: 2
   pool: 40
   lifetime: 9000
+  # CPU and memory limits of the pods, increase to scale pods vertically
   cpu: 200m
   memory: 1536M
+  # configuration for automatic synchronization of sources
   auto_sync:
+    # Enables the scheduled synchronization
     enabled: true
+    # Number of syncs to add to the job queue at once, lower number smooths out the sync schedule, high number causes more peaky load
     count: 30
+    # How often to run the synchronization, default every 24 hours
     minutes: 1440
-  azure:
-    client_id: "example"
-    subscription_id: "example"
-    tenant_id: "example"
-    secret_key: "example"
+  # configuration for AWS CAR
+  # Either configure with Role based access or IAM keys
   aws:
+    # set to true to use role based access
+    # the k8s service account needs to be connected to an AWS AMI Role with assumeRole rights
+    use_sa_role: false
+    # The account containing either the role or the user
     account_id: "example"
+    # aws access key id for the user (if using a user)
     access_key: "example"
+    # aws secret key for the user (if using a user)
     secret_key: "example"
 
+# This block configures the environment build pods
 build:
+  # Number of pods to run in parallel
+  replicas: 1
+  # Used for performance tuning the build pods
   concurrency: 2
   lifetime: 1440
   pool: 40
-  replicas: 1
+  # CPU and memory limits of the pod, increase to scale pods vertically
   cpu: 100m
   memory: 1024M
 
+# This block configues the scheduler pods
 clock:
+  # Number of pods to run in parallel, 1 is recommended
+  replicas: 1
+  # User for performance tuning
   concurrency: 2
   lifetime: 1440
   pool: 40
-  replicas: 1
+  # CPU and memory limits of the pod, increase to scale pods vertically
   cpu: 100m
   memory: 1024M
 
+# This block configures the environment render pods
 render:
+  # Number of pods t orun in parallel
+  replicas: 1
+  # Used for performance tuning
   concurrency: 2
   lifetime: 1440
   pool: 40
-  replicas: 1
+  # CPU and memory limits of the pods, increase to scale pods vertically
   cpu: 250m
   memory: 2048M
+  # Configuration for storage of render outputs in S3
   aws:
-    access_key: "example"
+    # set to true to use role based access
+    # the k8s service account needs to be connected to an AWS AMI Role with assumeRole rights
+    use_sa_role: false
+    # name of the S3 bucket to store render outputs in
     bucket: "example"
+    # region that the S3 bucket has been configured for
     region: "example"
+    # aws access key id for the user with access to the S3 bucket (if using a user)
+    access_key: "example"
+    # aws secret key for the user with access to the S3 bucket (if using a user)
     secret_key: "example"
 
+# This block configures the background worker pods
 worker:
+  # Number of background workers to run in parallel
+  replicas: 1
+  # Used for performance tuning of the pods
   concurrency: 2
   lifetime: 1440
   pool: 40
-  replicas: 1
+  # CPU and memory limit of the pods, increase to scale pods vertically
   cpu: 100m
   memory: 1024M
 
+# This block configures the report builder pods
 report:
+  # Number of report builder to run in parallel
+  replicas: 1
+  # Used for prformance tuning of the pods
   concurrency: 2
   lifetime: 1440
   pool: 40
-  replicas: 1
+  # CPU and memory limits of the pods, increase to scale vertically
   cpu: 100m
   memory: 1024M
 
+# This block configures the maintenance worker pods
 maintenance:
+  # Number of maintenance workers to run in parallel
+  replicas: 1
+  # Used to performance tuning of the pods
   concurrency: 2
   lifetime: 1440
   pool: 40
-  replicas: 1
+
 
 database:
+  # uri of the postgres server endpoint to connect to
   host: "example"
+  # port of the postgress server to connect to
   port: 5432
+  # username of the user Hava uses to authenticate to postgres
   user: "postgres"
+  # password of the user Hava uses to authneticate to postgres
   password: "havahava"
+  # name of the database 
   name: "hava"
 
 email: 
   smtp:
+    # Username for the user to authenticate with the smtp endpoint
     user: "example"
+    # Password for the user to authenticate with the smtp endpoint
     pass: "example"
+    # Port to connect to the smpt endpoint
     port: 25
+    # The endpoint to connect to
     endpoint: "example.com"
-    address: "example.com"
+    # The address hava will use to send emails to users
     from_address: "noreply@example.com"
+    # The name hava will use to send emails to users
     from_name: "No Reply"
+    # The HELO domain to send to the smtp gateway if required
+    domain: ""
 
 cache:
   ## set to false if hosting redis externally. e.g. memstore paas
@@ -158,22 +228,35 @@ storage:
 elasticsearch:
   ## set to false if hosting elasticsearch externally
   enabled: true
+  # Number of nodes to run in the elasticsearch cluster, minimum of 3, odd number works best
   replicas: 3
   password: "example"
+  # Image repository to download the elastic image from, change if using an internal container registry
   image: hava/elasticsearch
+  # the tag of the image
   imageTag: 6.8-s3-backup-1.0.6
   backup:
+    # Change this to disable backups for the elasticsearch deployment
     enabled: true
+    # set to true to use role based access
+    # the k8s service account needs to be connected to an AWS AMI Role with access rights to the S3 bucket
+    use_sa_role: false
+    # name of the S3 bucket to store backup snapshots in
     bucket_name:
+    # aws access key id for the iam user to use for accessing the S3 bucket
     access_key:
+    # aw secret key for iam user to use to accessign the S3 bucket
     secret_key:
+  # used for adding secrets to the internal elastic keystore
   keystore:
+  # this is needed, don't change
   - secretName: elasticsearch-secrets # hardcoded because helm does not support dynamic values here
     items:
     - key: es-secret-access-key
       path: s3.client.default.access_key
     - key: es-secret-secret-key
       path: s3.client.default.secret_key
+  # Resoruce limits for the elastic nodes, incrase to scale vertically
   resources:
     requests:
       cpu: "250m"
@@ -181,6 +264,7 @@ elasticsearch:
     limits:
       cpu: "500m"
       memory: "1536M"
+  # Perstitent storage for the elastic cluster, change this to increase the storage of the cluster
   volumeClaimTemplate:
     storageClassName: hava-ssd
     resources:
@@ -188,6 +272,7 @@ elasticsearch:
         storage: 200Gi
 
 kibana:
+  # Number of kibana nodes to run, defaults to 0, scale up if need to connect and run maintenance on the elastic cluster
   replicas: 0
 
 encryption:
