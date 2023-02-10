@@ -127,9 +127,16 @@ data:
 
   RECAPTCHA_ENABLED: "false"
   # AWS
-  {{ if .Values.aws.regions }}
+  {{- if .Values.aws.regions }}
   AWS_REGIONS: {{ .Values.aws.regions | quote }}
-  {{ end }}
-  {{ if .Values.aws.govcloud_enabled }}
+  {{- end }}
+  {{- if .Values.aws.govcloud_enabled }}
   AWS_GOVCLOUD_SUPPORT: "true"
-  {{ end }}
+  {{- end }}
+
+  {{- if .Values.import.aws.use_sa_role }}
+  CAR_USE_INSTANCE_PROFILE: "true"
+  {{- end }}
+  {{- if .Values.render.aws.use_sa_role }}
+  RENDER_S3_USE_INSTANCE_PROFILE: "true"
+  {{- end }}

@@ -26,10 +26,14 @@ spec:
         helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     spec:
       restartPolicy: Never
+      {{- if .Values.image.pull_secret_name }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pull_secret_name }}
+      {{- end }}
       containers:
       - name: setup
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
         command: ["/bin/sh", "-c"]
         volumeMounts:
           - name: license

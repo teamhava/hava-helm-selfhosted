@@ -30,6 +30,13 @@ spec:
         app.kubernetes.io/name: {{ include "hava.name" . }}-worker
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- if .Values.serviceaccount.enabled }}
+      serviceAccountName: {{ include "hava.serviceaccount.name" . }}
+      {{- end }}
+      {{- if .Values.image.pull_secret_name }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pull_secret_name }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-worker
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

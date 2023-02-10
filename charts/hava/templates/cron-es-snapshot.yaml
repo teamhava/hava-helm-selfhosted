@@ -9,6 +9,10 @@ spec:
     spec:
       template:
         spec:
+          {{- if .Values.image.pull_secret_name }}
+          imagePullSecrets:
+          - name: {{ .Values.image.pull_secret_name }}
+          {{- end }}
           containers:
           - name: es-curl
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

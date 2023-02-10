@@ -35,7 +35,18 @@ environment:
 image:
   repository: hava/self-hosted
   tag: 2.1.531
-  pullPolicy: IfNotPresent
+  pull_policy: IfNotPresent
+  # Set this to use a secret to authenticate with a private container registry
+  pull_secret_name:
+
+# this block is used to configure the k8s service account
+serviceaccount:
+  # set to false to not create a service account
+  enabled: true
+  # annotations to add to the service account
+  annotations: {}
+  # additional labels to add to the service account
+  lables: {}
 
 # This block configures the web and api pods
 web:
