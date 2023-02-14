@@ -16,7 +16,6 @@ jobs:
 
       - name: Copy license and readme to chart
         run: |
-          cp readme.md charts/hava/README.md
           cp LICENSE charts/hava/LICENSE
 
       - name: Configure Git

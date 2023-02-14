@@ -60,6 +60,17 @@ parameters:
   type: io1
   iopsPerGB: "10"
   fsType: ext4
+# ---
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: hava-gp2
+# provisioner: kubernetes.io/aws-ebs
+# allowVolumeExpansion: true
+# parameters:
+#   type: gp2
+#   fsType: ext4
+#   encrypted: "true"
 {{- end }}
 
 {{- if eq (.Values.storage.type | upper)  "AZURE" }}

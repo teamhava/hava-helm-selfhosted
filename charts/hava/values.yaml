@@ -34,7 +34,7 @@ environment:
 # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
 image:
   repository: hava/self-hosted
-  tag: 2.1.531
+  tag: 2.1.585
   pull_policy: IfNotPresent
   # Set this to use a secret to authenticate with a private container registry
   pull_secret_name:
@@ -54,8 +54,7 @@ web:
   replicas: 1
   # Used for performance tuning of the web instance
   concurrency: 2
-  pool: 5
-  threads: 2
+  threads: 5
   lifetime: 1440
   # AWS ALB defaults to 60, needs to be 60 + timeout value
   persistent_timeout: 75 
@@ -249,9 +248,6 @@ elasticsearch:
   backup:
     # Change this to disable backups for the elasticsearch deployment
     enabled: true
-    # set to true to use role based access
-    # the k8s service account needs to be connected to an AWS AMI Role with access rights to the S3 bucket
-    use_sa_role: false
     # name of the S3 bucket to store backup snapshots in
     bucket_name:
     # aws access key id for the iam user to use for accessing the S3 bucket
