@@ -26,16 +26,27 @@ spec:
         helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     spec:
       restartPolicy: Never
+      {{- if .Values.image.pull_secret_name }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pull_secret_name }}
+      {{- end }}
       containers:
       - name: setup
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
         command: ["/bin/sh", "-c"]
         volumeMounts:
           - name: license
             mountPath: /hava/license
             readOnly: true
-        args: ["hava exec rake db:setup && hava exec rake es:index && hava accounts setup {{ .Values.setup.license_user }} {{ .Values.setup.license_email }} && curl -X PUT \"http://elasticsearch-master:9200/_snapshot/s3_backups?pretty\" -H 'Content-Type: application/json' -d'{ \"type\": \"s3\", \"settings\": { \"bucket\": \"{{ required "The backup bucket for Elasticsearch needs to be configured. Please set the elasticsearch.backup.bucket_name value in the configuration file." .Values.elasticsearch.backup.bucket_name }}\" } }'"]
+        {{- if .Values.elasticsearch.backup.enabled }}
+          {{- if not .Values.elasticsearch.backup.bucket_name }}
+            {{- fail "The backup bucket for Elasticsearch needs to be configured if backups are enabled. Please set the elasticsearch.backup.bucket_name value in the configuration file." }}
+          {{- end}}
+        args: ["hava exec rake db:setup && hava exec rake es:index && hava accounts setup {{ .Values.setup.license_user }} {{ .Values.setup.license_email }} && curl -X PUT \"http://elasticsearch-master:9200/_snapshot/s3_backups?pretty\" -H 'Content-Type: application/json' -d'{ \"type\": \"s3\", \"settings\": { \"bucket\": \"{{ .Values.elasticsearch.backup.bucket_name }}\" } }'"]
+        {{- else }}
+        args: ["hava exec rake db:setup && hava exec rake es:index && hava accounts setup {{ .Values.setup.license_user }} {{ .Values.setup.license_email }}"]
+        {{- end}}
         resources:
           requests:
             cpu: 500m

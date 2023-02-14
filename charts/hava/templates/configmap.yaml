@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 data:
+  PLATFORM: kubernetes
   NAME: {{ include "hava.fullname" . | quote }}
   LICENCE_FILE: /hava/license/license
 
@@ -49,10 +50,6 @@ data:
   API_PORT: "80"
   {{ end }}
   API_PATH: "/"
-  ICONS_SCHEME: {{ .Values.web.icons.scheme | quote }}
-  ICONS_HOST: {{ .Values.web.icons.host | quote }}
-  ICONS_PORT: {{ .Values.web.icons.port | quote }}
-  ICONS_PATH: {{ .Values.web.icons.path | quote }}
 
   # Connection URLs (contains secrets 🤫)
   {{- if .Values.elasticsearch.host }}
@@ -131,9 +128,16 @@ data:
 
   RECAPTCHA_ENABLED: "false"
   # AWS
-  {{ if .Values.aws.regions }}
+  {{- if .Values.aws.regions }}
   AWS_REGIONS: {{ .Values.aws.regions | quote }}
-  {{ end }}
-  {{ if .Values.aws.govcloud_enabled }}
+  {{- end }}
+  {{- if .Values.aws.govcloud_enabled }}
   AWS_GOVCLOUD_SUPPORT: "true"
-  {{ end }}
+  {{- end }}
+
+  {{- if .Values.import.aws.use_sa_role }}
+  CAR_USE_INSTANCE_PROFILE: "true"
+  {{- end }}
+  {{- if .Values.render.aws.use_sa_role }}
+  RENDER_S3_USE_INSTANCE_PROFILE: "true"
+  {{- end }}

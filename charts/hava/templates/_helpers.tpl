@@ -52,11 +52,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "hava.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "hava.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- define "hava.serviceaccount.name" -}}
+{{- if .Values.serviceaccount.enabled }}
+{{- printf "%s-sa" (include "hava.fullname" .) }}
 {{- end }}
 {{- end }}
 
