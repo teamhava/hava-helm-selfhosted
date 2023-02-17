@@ -63,7 +63,7 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "hava.apiHostName" -}}
-{{- printf  "%s.%s" .Values.environment.web_subdomain .Values.environment.domain }}
+{{- printf  "%s.%s" .Values.environment.api_subdomain .Values.environment.domain }}
 {{- end }}
 
 {{- define "hava.websocketHostName" -}}
