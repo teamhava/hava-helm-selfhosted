@@ -11,6 +11,8 @@ data:
   PLATFORM: kubernetes
   NAME: {{ include "hava.fullname" . | quote }}
   LICENCE_FILE: /hava/license/license
+  LOG_LEVEL: {{ .Values.environment.log_level | quote }}
+
 
   AUTO_SYNC_ENABLED: "true"
   AUTO_SYNC: {{ .Values.import.auto_sync.enabled | quote }}

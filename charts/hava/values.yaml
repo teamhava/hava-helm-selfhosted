@@ -23,6 +23,8 @@ environment:
   # This is used to add additional allowed sources for CORS, needs to be fully qualified domains including protocol and port. e.g. 'https://qa.hava.io:9700'
   # Format is a comma separated string "https://qa.hava.io:9700,https://dev.hava.io:9700"
   cors_hosts:
+  # Sets the log level for hava, suported values: debug, info, warn, error
+  log_level: info
   # This block is for enabling auth0 for managing user credentials, please reach out to hava support on details on how to configure this
   auth0:
     enabled:
@@ -34,7 +36,7 @@ environment:
 # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
 image:
   repository: hava/self-hosted
-  tag: 2.1.585
+  tag: 2.1.589
   pull_policy: IfNotPresent
   # Set this to use a secret to authenticate with a private container registry
   pull_secret_name:
@@ -294,4 +296,4 @@ aws:
   # Set to a comma delimited list of regions to support, i.e. us-west-1,us-west-2. If blank it will import all regions.
   regions:
   # Set to false if you don't allow govcloud data to be imported
-  govcloud_enabled: true
+  govcloud_enabled: false
