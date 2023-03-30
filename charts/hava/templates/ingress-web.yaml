@@ -1,4 +1,5 @@
 {{- if .Values.web.ingress.enable }}
+{{- if eq (.Values.web.ingress.type | upper) "AWS" }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
@@ -66,4 +67,57 @@ spec:
               name: {{ include "hava.fullname" . }}-web
               port:
                 number: 9700
+{{- end }}
+{{- if eq (.Values.web.ingress.type | upper) "AZURE" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "hava.fullname" . }}-ingress
+  labels:
+    app.kubernetes.io/name: {{ include "hava.fullname" . }}-ingress
+    helm.sh/chart: {{ include "hava.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/health-probe-status-codes: "200-404"
+    # appgw.ingress.kubernetes.io/health-probe-path: '/health_check'
+    appgw.ingress.kubernetes.io/health-probe-interval: "5"
+    appgw.ingress.kubernetes.io/health-probe-timeout: '10'
+spec:
+  rules:
+    - host: {{ include "hava.webHostName" . }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-web
+              port:
+                number: 9700
+    - host: {{ include "hava.websocketHostName" . }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-websocket
+              port:
+                number: 9701
+    - host: {{ include "hava.apiHostName" . }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-web
+              port:
+                number: 9700
+---
+
+{{- end }}
 {{- end }}
