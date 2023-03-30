@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.8.0  ![AppVersion: v2.2.705](https://img.shields.io/static/v1?label=AppVersion&message=v2.9.8&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.16.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+## 0.8.0  ![AppVersion: v2.2.705](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 ---
 
 **Relase date:** 2023-03-31
