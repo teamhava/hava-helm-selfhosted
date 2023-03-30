@@ -20,7 +20,7 @@ The chart expects a few servies to be deployed and configured in your environmen
 - S3 Bucket for Elasticsearch backup
 - S3 Bucket for storage of renders and reports
 
-For a detailed guide on setting these up, please see our [docs](https://developer.hava.io/self-hosted/installation-guides/ha-kubernetes-eks)
+For a detailed guide on setting these up, please see our [docs](https://developer.hava.io/self-hosted/installation-guides/highly-available-kubernetes)
 
 ### Helm Install
 
@@ -33,6 +33,8 @@ helm install <your release name> hava/hava --set-file license=<path to licensefi
 ```
 
 ## Example configuration file
+
+The following configuration file is a set of the minimal configuration required to deploy Hava onto an EKS cluster. More details on configuring Hava can be found in our [docs](https://developer.hava.io/self-hosted/installation-guides/highly-available-kubernetes) and also in the [values.yaml](values.yaml) file
 
 ```yaml
 setup:

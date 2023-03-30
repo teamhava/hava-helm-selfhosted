@@ -118,6 +118,16 @@ spec:
             timeoutSeconds: 1
             successThreshold: 1
             failureThreshold: 10
+            initialDelaySeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /health_check
+              port: 9700
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 10
+            initialDelaySeconds: 30
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

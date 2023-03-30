@@ -13,7 +13,6 @@ data:
   LICENCE_FILE: /hava/license/license
   LOG_LEVEL: {{ .Values.environment.log_level | quote }}
 
-
   AUTO_SYNC_ENABLED: "true"
   AUTO_SYNC: {{ .Values.import.auto_sync.enabled | quote }}
   AUTO_SYNC_COUNT: {{ .Values.import.auto_sync.count | quote }}
@@ -25,13 +24,19 @@ data:
   CAR_ACCOUNT_ID: {{ .Values.import.aws.account_id | quote }}
   CAR_USER_ACCESS_KEY: {{ .Values.import.aws.access_key | quote }}
 
-  RENDER_TYPE: "s3"
+  RENDER_STORAGE_TYPE: {{ .Values.render.storage_type | quote }}
+  RENDER_STOAGE_PREFIX: {{ .Values.render.storage_prefix | quote }}
+  {{- if eq (.Values.render.storage_type | upper) "S3"}}
   RENDER_S3_ACCESS_KEY_ID: {{ .Values.render.aws.access_key | quote }}
-  RENDER_S3_BUCKET: {{ .Values.render.aws.bucket | quote }}
-  RENDER_S3_REGION: {{ .Values.render.aws.region | quote }}
-  RENDER_LOCATION: "/tmp"
+  RENDER_STORAGE_LOCATION: {{ .Values.render.aws.bucket | quote }}
+  RENDER_STORAGE_REGION: {{ .Values.render.aws.region | quote }}
+  {{- end}}
 
-  DESIGN_SVG_URL: "https://s3-{{ .Values.render.aws.region }}.amazonaws.com/{{ .Values.render.aws.bucket }}"
+  {{- if eq (.Values.render.storage_type | upper) "AZURE-BLOB" }}
+  RENDER_STORAGE_LOCATION:  {{ .Values.render.azure.blob_container | quote }}
+  RENDER_AZURE_STORAGE_ACCOUNT_NAME: {{ .Values.render.azure.storage_account | quote }}
+  RENDER_AZURE_STORAGE_ACCESS_KEY: {{ .Values.render.azure.access_key | quote }}
+  {{- end}}
 
   # Application URLs
   {{ if eq .Values.environment.ssl "true" }}

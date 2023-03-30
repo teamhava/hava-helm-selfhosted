@@ -35,7 +35,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pull_policy }}
         command: ["/bin/sh", "-c"]
-        args: ["hava exec rake db:migrate"]
+        args: ["hava exec rake db:migrate && ./price_import.sh"]
         volumeMounts:
           - name: license
             mountPath: /hava/license

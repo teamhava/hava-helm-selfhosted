@@ -44,7 +44,21 @@ spec:
             requests:
               cpu: {{ .Values.websocket.cpu }}
             limits:
-              memory: {{ .Values.websocket.memory}}
+              memory: {{ .Values.websocket.memory }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9701
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9701
+            initialDelaySeconds: 10
+            periodSeconds: 3
           envFrom:
           - configMapRef:
               name: {{ include "hava.fullname" . }}-environment
