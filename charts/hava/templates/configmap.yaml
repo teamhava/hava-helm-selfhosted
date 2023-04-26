@@ -124,6 +124,7 @@ data:
   {{ if .Values.environment.cors_hosts }}
   CORS_HOSTS: {{ .Values.environment.cors_hosts | quote }}
   {{ end }}
+  CORS_ENABLED: {{ .Values.environment.cors_enabled | quote }}
 
   {{ if .Values.environment.auth0.enabled }}
   AUTH_TYPE: "auth0"

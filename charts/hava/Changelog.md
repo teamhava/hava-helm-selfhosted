@@ -1,11 +1,35 @@
 # Change Log
 
+## 0.8.2 ![AppVersion: v2.2.705](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+---
+
+* Added config value for disabling CORS validation for debug purposes
+
+### Default Value Changes
+
+```diff
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 863ce4f..75570c7 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -23,6 +23,8 @@ environment:
+   # This is used to add additional allowed sources for CORS, needs to be fully qualified domains including protocol and port. e.g. 'https://qa.hava.io:9700'
+   # Format is a comma separated string "https://qa.hava.io:9700,https://dev.hava.io:9700"
+   cors_hosts:
++  # Set to false to disable cors validation (for debugging)
++  cors_enabled: true
+   # Sets the log level for hava, suported values: debug, info, warn, error
+   log_level: info
+   # This block is for enabling auth0 for managing user credentials, please reach out to hava support on details on how to configure this
+
+```
+
 ## 0.8.1  ![AppVersion: v2.2.705](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 ---
 
 **Release date:** 2023-04-12
 
-* Removed kuberentes version check from chart as it was breaking installs on EKS clusters
+* Removed kubernetes version check from chart as it was breaking installs on EKS clusters
 
 ## 0.8.0  ![AppVersion: v2.2.705](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 ---

@@ -23,6 +23,8 @@ environment:
   # This is used to add additional allowed sources for CORS, needs to be fully qualified domains including protocol and port. e.g. 'https://qa.hava.io:9700'
   # Format is a comma separated string "https://qa.hava.io:9700,https://dev.hava.io:9700"
   cors_hosts:
+  # Set to false to disable cors validation (for debugging)
+  cors_enabled: true
   # Sets the log level for hava, suported values: debug, info, warn, error
   log_level: info
   # This block is for enabling auth0 for managing user credentials, please reach out to hava support on details on how to configure this
