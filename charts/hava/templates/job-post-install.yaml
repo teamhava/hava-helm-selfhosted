@@ -58,8 +58,8 @@ spec:
         env:
         - name: DATABASE_URL
           valueFrom:
-            configMapKeyRef:
-              name: {{ include "hava.fullname" . }}-environment
+            secretKeyRef:
+              name: {{ include "hava.fullname" . }}-secrets
               key: "DATABASE_URL"
         - name: REDIS_URL
           valueFrom:

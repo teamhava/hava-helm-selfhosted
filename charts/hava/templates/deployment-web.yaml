@@ -51,16 +51,16 @@ spec:
           env:
           - name: PERSISTENT_TIMEOUT
             value: {{ .Values.web.persistent_timeout | quote }}
-          - name: DATABASE_URL
-            valueFrom:
-              configMapKeyRef:
-                name: {{ include "hava.fullname" . }}-environment
-                key: "DATABASE_URL"
           - name: REDIS_URL
             valueFrom:
               configMapKeyRef:
                 name: {{ include "hava.fullname" . }}-environment
                 key: "REDIS_URL"
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "hava.fullname" . }}-secrets
+                key: "DATABASE_URL"
           - name: CAR_USER_SECRET_KEY
             valueFrom:
               secretKeyRef:

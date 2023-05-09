@@ -63,16 +63,16 @@ spec:
           - configMapRef:
               name: {{ include "hava.fullname" . }}-environment
           env:
-          - name: DATABASE_URL
-            valueFrom:
-              configMapKeyRef:
-                name: {{ include "hava.fullname" . }}-environment
-                key: "DATABASE_URL"
           - name: REDIS_URL
             valueFrom:
               configMapKeyRef:
                 name: {{ include "hava.fullname" . }}-environment
                 key: "REDIS_URL"
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "hava.fullname" . }}-secrets
+                key: "DATABASE_URL"
           - name: CAR_USER_SECRET_KEY
             valueFrom:
               secretKeyRef:
