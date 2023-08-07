@@ -36,6 +36,7 @@ spec:
 
 {{- if eq (.Values.storage.type | upper ) "GCP" }}
 ---
+# this storage class exists for backwards compatability reasons
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -46,10 +47,22 @@ parameters:
   type: pd-ssd
   fstype: ext4
   replication-type: none
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hava
+provisioner: kubernetes.io/gce-pd
+allowVolumeExpansion: true
+parameters:
+  type: pd-ssd
+  fstype: ext4
+  replication-type: none
 {{- end }}
 
 {{- if eq (.Values.storage.type | upper)  "AWS" }}
 ---
+# this storage class exists for backwards compatability reasons
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -60,25 +73,36 @@ parameters:
   type: io1
   iopsPerGB: "10"
   fsType: ext4
-# ---
-# apiVersion: storage.k8s.io/v1
-# kind: StorageClass
-# metadata:
-#   name: hava-gp2
-# provisioner: kubernetes.io/aws-ebs
-# allowVolumeExpansion: true
-# parameters:
-#   type: gp2
-#   fsType: ext4
-#   encrypted: "true"
-{{- end }}
-
-{{- if eq (.Values.storage.type | upper)  "AZURE" }}
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
+  name: hava
+provisioner: kubernetes.io/aws-ebs
+allowVolumeExpansion: true
+parameters:
+  type: gp2
+  fsType: ext4
+  encrypted: "true"
+{{- end }}
+
+{{- if eq (.Values.storage.type | upper)  "AZURE" }}
+---
+# this storage class exists for backwards compatability reasons
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
   name: hava-ssd
+provisioner: kubernetes.io/azure-disk
+allowVolumeExpansion: true
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: managed
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hava
 provisioner: kubernetes.io/azure-disk
 allowVolumeExpansion: true
 parameters:

@@ -1,5 +1,246 @@
 # Change Log
 
+## 1.0.0 ![AppVersion: v2.3.877](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+Migration guide can be found in [the official documentation](https://developer.hava.io).
+
+* Feature: Diff View
+* Feature: Alerts 
+* Feature: SNS display and connections
+* Feature: Display connections for SQS to Lambda
+* Feature: Display connections between DynamoDB and Lambda
+* Feature: Added new CLI for management and troubleshooting 
+* Feature: Display load balancer connections to WAFv2
+* Feature: Display connect from S3 to SNS, SQS, and Lambda using notification configuration
+* Feature: Display connections between API Gateway and Lambda
+* Feature: Improve connection identification between route53 and CloudFront distributions
+* Improvement: Updated pricing data for AWS, Azure, and GCP 
+* Improvement: Simplified backend workers, now running combined workers rather than multiple types for easier management
+* Improvement: Shares will now be removed when deleting an environment
+* Improvement: Upgraded dependent libraries for exporting diagrams
+* Improvement: API Gateway searches will now correctly return VPC Link resources
+* Improvement: Improved resource identification in environment created  for default Kubernetes clusters
+* Improvement: Fix email layouts
+* Improvement: Improved user experience for adding new AWS sources
+* Improvement: Give a useful error for the search if hit a 502
+* Performance: Reviewed and added missing indexes to db
+* Performance: Cache environment data between page loads
+*  Security: Team member delete no longer returns details about the removed user. If the user doesn’t exist it just returns success
+* Security: Added limit to characters allowed on signup form
+* Bug: Fixed issue with S3 signed URL creation for export jobs
+* Bug: Fixed issue with logging of AWS Route Tables that have an unsupported type
+* Bug: Fixed issue with missing default value for DynamoDB key_schema as it's not always defined
+* Bug: Fixed issue with startup when values are missing by setting reasonable defaults
+* Bug: Fixed attributes for Regional URL Map in GCP
+* Bug: Fixed account selection after a login redirect
+* Bug: Fixed issues with importing CloudRun resources that don't have push_config enabled
+
+### Breaking Changes
+
+* CORS defaults to disabled
+* DNS Changes
+   * Single DNS entry required now, rather than 3 used in the past. 
+   * Ingress changes may trigger new deployment of Load Balancer and DNS will need to be updated in some cases
+   * default subdomain has been changed to `hava`
+* Several workers removed, custom scaling config needs to be updated
+   * Build
+   * import
+   * render
+   * report
+   * worker
+* [AWS] New cheaper storage class based on GP2 is the default
+   * Ensure you update your config with the old storage class (`hava-ssd`) to ensure a smooth migration
+
+### Default Value Changes
+
+```diff
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 75570c7..830b2c2 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -4,27 +4,22 @@
+ 
+ setup:
+   license_user: hava
+-  license_email: tom@hava.io
++  license_email: example@hava.io
+   license: 
+ 
+ environment:
+   # dns domain the end user will connect on to access hava, e.g. hava.io 
+   # this is used for cors, to it needs to match
+   domain: "example.com"
+-  # The subdomain that the app runs on, default is 'app' which will set up the application on e.g. app.hava.io if hava.io is set as the domain
+-  web_subdomain: "app"
+-  # the subdomain that the api runs on, defauilt is 'api' which will set up the api on e.g. api.hava.io if hava.io is set as the domain
+-  # this can be the same as the web subdomain
+-  api_subdomain: "api"
+-  # the subdomain that the notification endpoint runs on, defauilt is 'notify' which will set up the notify on e.g. notify.hava.io if hava.io is set as the domain
+-  websocket_subdomain: "notify"
++  # The subdomain that the app runs on, default is 'hava' which will set up the application on e.g. hava.hava.io if hava.io is set as the domain
++  web_subdomain: "hava"
+   # used to enable or disable ssl for the endpoints. If set to true, ingress needs to be configured with a valid ssl certificate
+   ssl: "false"
+   # This is used to add additional allowed sources for CORS, needs to be fully qualified domains including protocol and port. e.g. 'https://qa.hava.io:9700'
+   # Format is a comma separated string "https://qa.hava.io:9700,https://dev.hava.io:9700"
+   cors_hosts:
+-  # Set to false to disable cors validation (for debugging)
+-  cors_enabled: true
++  # Set to true to enable cors validation
++  cors_enabled: false
+   # Sets the log level for hava, suported values: debug, info, warn, error
+   log_level: info
+   # This block is for enabling auth0 for managing user credentials, please reach out to hava support on details on how to configure this
+@@ -59,7 +54,6 @@ web:
+   # Used for performance tuning of the web instance
+   concurrency: 2
+   threads: 5
+-  lifetime: 1440
+   # AWS ALB defaults to 60, needs to be 60 + timeout value
+   persistent_timeout: 75 
+   # CPU and memory limits of the pods, increase to scale the pods vertically
+@@ -73,30 +67,17 @@ web:
+     type: AWS
+     # add cert ARN here if ssl is set to true in environment
+     acm_cert_arn: ""
++
+ # This block configures the notify pods
+ websocket:
+   # Number of pods to run in parallel 
+   replicas: 1
+-  # Used for performance tuning of the websocket instance
+-  concurrency: 2
+-  pool: 5
+-  threads: 2
+-  lifetime: 1440
+   #CPU and memory limits of the pods, increase to scale the pods vertically
+   cpu: 100m
+   memory: 256M
+ 
+ # This block configures the import pods
+ import:
+-  # Number of pods to run in parallel
+-  replicas: 1
+-  # Used for performance tuning of the import pods
+-  concurrency: 2
+-  pool: 40
+-  lifetime: 9000
+-  # CPU and memory limits of the pods, increase to scale pods vertically
+-  cpu: 200m
+-  memory: 1536M
+   # configuration for automatic synchronization of sources
+   auto_sync:
+     # Enables the scheduled synchronization
+@@ -118,25 +99,12 @@ import:
+     # aws secret key for the user (if using a user)
+     secret_key: "example"
+ 
+-# This block configures the environment build pods
+-build:
+-  # Number of pods to run in parallel
+-  replicas: 1
+-  # Used for performance tuning the build pods
+-  concurrency: 2
+-  lifetime: 1440
+-  pool: 40
+-  # CPU and memory limits of the pod, increase to scale pods vertically
+-  cpu: 100m
+-  memory: 1024M
+-
+ # This block configues the scheduler pods
+ clock:
+   # Number of pods to run in parallel, 1 is recommended
+   replicas: 1
+   # User for performance tuning
+   concurrency: 2
+-  lifetime: 1440
+   pool: 40
+   # CPU and memory limits of the pod, increase to scale pods vertically
+   cpu: 100m
+@@ -144,15 +112,6 @@ clock:
+ 
+ # This block configures the environment render pods
+ render:
+-  # Number of pods t orun in parallel
+-  replicas: 1
+-  # Used for performance tuning
+-  concurrency: 2
+-  lifetime: 1440
+-  pool: 40
+-  # CPU and memory limits of the pods, increase to scale pods vertically
+-  cpu: 250m
+-  memory: 2048M
+   # where renders will be stored when completed, supported values: s3, azure-blob
+   storage_type: s3
+   # prefix added to path for files stored in storage location
+@@ -179,39 +138,16 @@ render:
+     # secret access key used to access storage account
+     access_key: ""
+ 
+-# This block configures the background worker pods
+-worker:
+-  # Number of background workers to run in parallel
+-  replicas: 1
+-  # Used for performance tuning of the pods
+-  concurrency: 2
+-  lifetime: 1440
+-  pool: 40
+-  # CPU and memory limit of the pods, increase to scale pods vertically
+-  cpu: 100m
+-  memory: 1024M
+ 
+-# This block configures the report builder pods
+-report:
+-  # Number of report builder to run in parallel
+-  replicas: 1
+-  # Used for prformance tuning of the pods
++workers:
++  # Number of pods to run in parallel, 2 is recommended for a basic deployment
++  replicas: 2
++  # used for performance tuning
+   concurrency: 2
+-  lifetime: 1440
+   pool: 40
+-  # CPU and memory limits of the pods, increase to scale vertically
+-  cpu: 100m
+-  memory: 1024M
+-
+-# This block configures the maintenance worker pods
+-maintenance:
+-  # Number of maintenance workers to run in parallel
+-  replicas: 1
+-  # Used to performance tuning of the pods
+-  concurrency: 2
+-  lifetime: 1440
+-  pool: 40
+-
++  # CPU and memory limits of the pod, increase to scale pods vertically
++  cpu: 1000m
++  memory: 2048M 
+ 
+ database:
+   # uri of the postgres server endpoint to connect to
+@@ -245,6 +181,7 @@ email:
+ cache:
+   ## set to false if hosting redis externally. e.g. memstore paas
+   enabled: true
++  storage_class: hava
+ 
+ # persistent storage configuration
+ storage:
+@@ -295,7 +232,7 @@ elasticsearch:
+       memory: "1536M"
+   # Perstitent storage for the elastic cluster, change this to increase the storage of the cluster
+   volumeClaimTemplate:
+-    storageClassName: hava-ssd
++    storageClassName: hava
+     resources:
+       requests:
+         storage: 200Gi
+
+
+```
+
 ## 0.8.3 ![AppVersion: v2.2.705](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 ---
 

@@ -50,6 +50,7 @@ spec:
         resources:
           requests:
             cpu: {{ .Values.clock.cpu}}
+            memory: {{ .Values.clock.memory}}
           limits:
             memory: {{ .Values.clock.memory}}
         envFrom:

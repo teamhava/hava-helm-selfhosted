@@ -18,6 +18,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
+    alb.ingress.kubernetes.io/group.name: hava
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '10'
     alb.ingress.kubernetes.io/target-type: ip
@@ -31,33 +32,28 @@ metadata:
     {{ end }}
 spec:
   ingressClassName: aws-load-balancer
-  defaultBackend:
-    service:
-      name: {{ include "hava.fullname" . }}-web
-      port: 
-        number: 9700
   rules:
     - host: {{ include "hava.webHostName" . }}
       http:
         paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ include "hava.fullname" . }}-web
-              port:
-                number: 9700
-    - host: {{ include "hava.websocketHostName" . }}
-      http:
-        paths:
-        - path: /
+        - path: /app/hava
           pathType: Prefix
           backend:
             service:
               name: {{ include "hava.fullname" . }}-websocket
               port:
                 number: 9701
-    - host: {{ include "hava.apiHostName" . }}
+    - host: {{ include "hava.webHostName" . }}
+      http:
+        paths:
+        - path: /apps/1
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-websocket
+              port:
+                number: 9701
+    - host: {{ include "hava.webHostName" . }}
       http:
         paths:
         - path: /
@@ -90,24 +86,24 @@ spec:
     - host: {{ include "hava.webHostName" . }}
       http:
         paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ include "hava.fullname" . }}-web
-              port:
-                number: 9700
-    - host: {{ include "hava.websocketHostName" . }}
-      http:
-        paths:
-        - path: /
+        - path: /app
           pathType: Prefix
           backend:
             service:
               name: {{ include "hava.fullname" . }}-websocket
               port:
                 number: 9701
-    - host: {{ include "hava.apiHostName" . }}
+    - host: {{ include "hava.webHostName" . }}
+      http:
+        paths:
+        - path: /apps/1
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "hava.fullname" . }}-websocket
+              port:
+                number: 9701
+    - host: {{ include "hava.webHostName" . }}
       http:
         paths:
         - path: /
