@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "hava.fullname" . }}-render
+  name: {{ include "hava.fullname" . }}-workers
   labels:
-    app.kubernetes.io/name: {{ include "hava.name" . }}-render
+    app.kubernetes.io/name: {{ include "hava.name" . }}-workers
     helm.sh/chart: {{ include "hava.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.render.replicas }}
+  replicas: {{ .Values.workers.replicas }}
   minReadySeconds: 5
   strategy:
     type: RollingUpdate
@@ -18,7 +18,7 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "hava.name" . }}-render
+      app.kubernetes.io/name: {{ include "hava.name" . }}-workers
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
@@ -27,7 +27,7 @@ spec:
         checksum.helm.kubernetes.io/secret2: {{ include (print $.Template.BasePath "/secret-license.yml") . | sha256sum }}
         checksum.helm.kubernetes.io/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
-        app.kubernetes.io/name: {{ include "hava.name" . }}-render
+        app.kubernetes.io/name: {{ include "hava.name" . }}-workers
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- if .Values.serviceaccount.enabled }}
@@ -38,20 +38,21 @@ spec:
       - name: {{ .Values.image.pull_secret_name }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-render
+      - name: {{ .Chart.Name }}-workers
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pull_policy }}
         command: ["/hava/bin/hava"]
-        args: ["exec", "render"]
+        args: ["exec", "combined_workers"]
         volumeMounts:
         - name: license
           mountPath: /hava/license
           readOnly: true
         resources:
           requests:
-            cpu: {{ .Values.render.cpu}}
+            cpu: {{ .Values.workers.cpu }}
+            memory: {{ .Values.workers.memory }}
           limits:
-            memory: {{ .Values.render.memory}}
+            memory: {{ .Values.workers.memory }}
         envFrom:
         - configMapRef:
             name: {{ include "hava.fullname" . }}-environment

@@ -50,7 +50,7 @@ data:
   {{ else }}
   API_SCHEME: "http"
   {{ end }}
-  API_HOST: "{{ .Values.environment.api_subdomain}}.{{ .Values.environment.domain }}"
+  API_HOST: "{{ .Values.environment.web_subdomain}}.{{ .Values.environment.domain }}"
   {{ if eq .Values.environment.ssl "true" }}
   API_PORT: "443"
   {{ else }}
@@ -72,37 +72,19 @@ data:
   {{- end }}
 
   {{ if eq .Values.environment.ssl "true" }}
-  WEBSOCKET_URL: "https://hava:hava@{{ include "hava.websocketHostName" . }}:443/apps/1"
+  WEBSOCKET_URL: "https://hava:hava@{{ include "hava.webHostName" . }}:443/apps/1"
   {{ else }}
-  WEBSOCKET_URL: "http://hava:hava@{{ include "hava.websocketHostName" . }}:80/apps/1"
+  WEBSOCKET_URL: "http://hava:hava@{{ include "hava.webHostName" . }}:80/apps/1"
   {{ end }}
 
   # Puma
-  WEB_CONCURRENCY: {{.Values.web.concurrency | quote}}
-  WEB_THREADS: {{.Values.web.threads | quote}}
+  WEB_CONCURRENCY: {{ .Values.web.concurrency | quote }}
+  WEB_THREADS: {{ .Values.web.threads | quote }}
 
   # Execution and lifetime settings
-  CONCURRENCY_BUILD: {{ .Values.build.concurrency | quote }}
-  CONCURRENCY_IMPORT: {{ .Values.import.concurrency | quote }}
-  CONCURRENCY_RENDER: {{ .Values.render.concurrency | quote }}
   CONCURRENCY_WEB: {{ .Values.web.concurrency | quote }}
-  CONCURRENCY_WORKER: {{ .Values.worker.concurrency | quote }}
-  CONCURRENCY_REPORT: {{ .Values.report.concurrency | quote }}
-  CONCURRENCY_MAINTENANCE: {{ .Values.maintenance.concurrency | quote }}
-  LIFETIME_BUILD: {{ .Values.build.lifetime | quote }}
-  LIFETIME_CLOCK: {{ .Values.clock.lifetime | quote }}
-  LIFETIME_IMPORT: {{ .Values.import.lifetime | quote }}
-  LIFETIME_RENDER: {{ .Values.render.lifetime | quote }}
-  LIFETIME_WEB: {{ .Values.web.lifetime | quote }}
-  LIFETIME_WORKER: {{ .Values.worker.lifetime | quote }}
-  LIFETIME_REPORT: {{ .Values.report.lifetime | quote }}
-  LIFETIME_MAINTENANCE: {{ .Values.maintenance.lifetime | quote }}
-  POOL_BUILD: {{ .Values.build.pool | quote }}
-  POOL_IMPORT: {{ .Values.import.pool | quote }}
-  POOL_RENDER: {{ .Values.render.pool | quote }}
-  POOL_WORKER: {{ .Values.worker.pool | quote }}
-  POOL_REPORT: {{ .Values.report.pool | quote }}
-  POOL_MAINTENANCE: {{ .Values.maintenance.pool | quote }}
+  CONCURRENCY_COMBINED_WORKERS: {{ .Values.workers.concurrency | quote }}
+  POOL_ALERT: {{ .Values.workers.pool | quote }}
 
   # Share and embed config - port is 443
   EMBEDDABLE_TYPE: "s3"

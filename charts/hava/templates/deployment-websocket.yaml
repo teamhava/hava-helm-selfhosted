@@ -43,6 +43,7 @@ spec:
           resources:
             requests:
               cpu: {{ .Values.websocket.cpu }}
+              memory: {{ .Values.websocket.memory }}
             limits:
               memory: {{ .Values.websocket.memory }}
           readinessProbe:
