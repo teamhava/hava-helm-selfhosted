@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.1 ![AppVersion: v2.3.880](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+* Bug: Resolved issue with price imports not loading correctly
+
 ## 1.0.0 ![AppVersion: v2.3.877](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 Migration guide can be found in [the official documentation](https://developer.hava.io).
