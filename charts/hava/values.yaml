@@ -33,7 +33,7 @@ environment:
 # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
 image:
   repository: hava/self-hosted
-  tag: 2.3.880
+  tag: 2.3.2686
   pull_policy: IfNotPresent
   # Set this to use a secret to authenticate with a private container registry
   pull_secret_name:
@@ -254,3 +254,7 @@ aws:
   regions:
   # Set to false if you don't allow govcloud data to be imported
   govcloud_enabled: false
+
+azure:
+  # set operating mode for hava in Azure. To run Hava in Azure US Government Cloud set this to 'azureusgovcloud'
+  environment: azurecloud

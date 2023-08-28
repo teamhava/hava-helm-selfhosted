@@ -19,6 +19,7 @@ data:
   AUTO_SYNC_MINUTES: {{ .Values.import.auto_sync.minutes | quote }}
 
   PROVIDER_AZURE_ENABLED: "true"
+  AZURE_ENVIRONMENT: {{ .Values.azure.environment | quote }}
 
   PROVIDER_AWS_CAR_ENABLED: "true"
   CAR_ACCOUNT_ID: {{ .Values.import.aws.account_id | quote }}

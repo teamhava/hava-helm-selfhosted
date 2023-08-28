@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.1.0 ![AppVersion: v2.3.2686](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+* Performance: Big improvement in load times on API requests
+* Feature: AWS Glacier Vaults now supported
+* Feature: Added connections between WAFv2 and API Gateway
+* Feature: Added connections between WAFv2 and Cloudfront
+* Feature: New region supported - il-central-1
+* Feature: Azure US Government Cloud now supported by setting AZURE_ENVIRONMENT flag
+
 ## 1.0.1 ![AppVersion: v2.3.880](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 * Bug: Resolved issue with price imports not loading correctly
