@@ -1,6 +1,10 @@
 # Change Log
 
-## 1.1.0 ![AppVersion: v2.3.2686](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+## 1.2.0 ![AppVersion: v2.3.2686](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.22.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+* Updated chart to use forked version of ElasticSearch HELM dependency to support newer version of kubernetes
+
+## 1.1.0 ![AppVersion: v2.3.2686](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.22.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 * Performance: Big improvement in load times on API requests
 * Feature: AWS Glacier Vaults now supported
@@ -8,6 +12,34 @@
 * Feature: Added connections between WAFv2 and Cloudfront
 * Feature: New region supported - il-central-1
 * Feature: Azure US Government Cloud now supported by setting AZURE_ENVIRONMENT flag
+
+```diff
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 0ab6ca0..416e5dd 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -33,7 +33,7 @@ environment:
+ # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
+ image:
+   repository: hava/self-hosted
+-  tag: 2.3.880
++  tag: 2.3.2686
+   pull_policy: IfNotPresent
+   # Set this to use a secret to authenticate with a private container registry
+   pull_secret_name:
+@@ -253,4 +253,7 @@ aws:
+   # Set to a comma delimited list of regions to support, i.e. us-west-1,us-west-2. If blank it will import all regions.
+   regions:
+   # Set to false if you don't allow govcloud data to be imported
+-  govcloud_enabled: false
+\ No newline at end of file
++  govcloud_enabled: false
++
++azure:
++  environment: azurecloud
+\ No newline at end of file
+
+```
 
 ## 1.0.1 ![AppVersion: v2.3.880](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.19.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 

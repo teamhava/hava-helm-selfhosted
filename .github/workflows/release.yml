@@ -26,6 +26,7 @@ jobs:
       - name: Configure Helm repos
         run: |
           helm repo add elastic https://helm.elastic.co
+          helm repo add hava https://teamhava.github.io/hava-helm-selfhosted
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
