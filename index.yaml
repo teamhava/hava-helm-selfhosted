@@ -1,5 +1,22 @@
 apiVersion: v1
 entries:
+  elasticsearch:
+  - apiVersion: v1
+    appVersion: 6.8.22
+    created: "2024-01-04T04:27:07.914067724Z"
+    description: Fork of the official Elastic helm chart for Elasticsearch
+    digest: 45941a3011cca925002fcaed163d77c99e7287147863ccb1cee225b51c15da9a
+    home: https://github.com/teamhava/hava-helm-selfhosted
+    icon: https://helm.elastic.co/icons/elasticsearch.png
+    maintainers:
+    - email: helm-charts@elastic.co
+      name: Elastic
+    name: elasticsearch
+    sources:
+    - https://github.com/teamhava/hava-helm-selfhosted
+    urls:
+    - https://github.com/teamhava/hava-helm-selfhosted/releases/download/elasticsearch-6.8.22/elasticsearch-6.8.22.tgz
+    version: 6.8.22
   hava-self-hosted:
   - apiVersion: v2
     appVersion: 2.3.2686
@@ -567,4 +584,4 @@ entries:
     urls:
     - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-0.3.2/hava-self-hosted-0.3.2.tgz
     version: 0.3.2
-generated: "2023-08-28T04:03:17.382141979Z"
+generated: "2024-01-04T04:27:07.914300607Z"
