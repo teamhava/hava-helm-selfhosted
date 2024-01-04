@@ -5,8 +5,9 @@ maintainers:
 - email: helm-charts@elastic.co
   name: Elastic
 name: elasticsearch
-version: 6.8.22
-appVersion: 6.8.22
+version: 6.8.23
+appVersion: 6.8.23
+kubeVersion: ">= 1.22.0-0"
 sources:
   - https://github.com/teamhava/hava-helm-selfhosted
 icon: https://helm.elastic.co/icons/elasticsearch.png
