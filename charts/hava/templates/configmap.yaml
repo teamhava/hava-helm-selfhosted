@@ -126,3 +126,7 @@ data:
   {{- if .Values.render.aws.use_sa_role }}
   RENDER_S3_USE_INSTANCE_PROFILE: "true"
   {{- end }}
+
+  {{- if .Values.environment.proxy }}
+  HTTP_PROXY: {{ .Values.environment.proxy | quote }}
+  {{- end }}

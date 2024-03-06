@@ -1,6 +1,62 @@
 # Change Log
 
-## 1.2.0 ![AppVersion: v2.3.2686](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.22.0-0 <1.25.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+## 1.3.0 ![AppVersion: v2.5.958](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.958&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.28.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Feature: AWS EventBridge support
+- Feature: AWS API Gateway V2 support
+- Feature: AWS Appsync support
+- Feature: AWS OpenSearch support
+- Feature: AWS RDS DB Proxy support
+- Feature: AWS Firehose and Kinesis support
+- Feature: AWS MSK support
+- Feature: AWS DocDB support
+- Feature: AWS Gateway Load Balancer support
+- Feature: Improved AWS Transit Gateway support including peers, connections, and multicast domains
+- Feature: Add ca-west-1 region for AWS
+- Feature: Display a link to the AWS console for supported resource types
+- Feature: Display account ID and source on attributes for AWS resources
+- Improvement: increased stability for Kubernetes imports
+- Improvement: better error handling and timeout handling for SSO
+- Improvement: Allow regex matching for CORS configuration
+- Improvement: Update AWS icons to latest versions
+- Improvement: AWS Glacier vaults are now searchable with tags
+- Improvement: Add resource highlighting when hovering over Azure security groups and route tables
+- Improvement: Add Source button on the source list
+- Improvement: Add loading indicator and logic to viewer revisions and diff
+- Performance: upgraded to Ruby 3 with YJIT enabled to improve performance
+- Performance: large improvement to environment and search load times
+- Security: upgraded build image and libraries
+- Security: added config to enable secure cookies
+- Bug: Fix issues with too many credential requests when using instance profiles in self hosted
+- Bug: Improve handling of invalid API tokens
+- Bug: Fix writing to local drive when using docker compose in self hosted
+- Bug: Fix error loading Glacier Vaults when they don’t have an SNS connection
+- Bug: Remove checkbox from ‘timestamp’ toggle in Safari
+- Bug: Handle open search dependency failures when the nodes haven't spun up yet
+- Bug: Fix a range of possible nil values in diagram connections
+- Bug: Fix lambda imports for layers with huge ARNs
+- Bug: Fix pricing issue with GCP SQL Instances
+- Bug: Catch validation exceptions in alert creation
+- Bug: Connections no longer get disconnected when selecting a non-displayed resource
+- Bug: Report an error when trying to do a search without providing a query string
+
+```diff
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 94c034a..99649a8 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -22,6 +22,8 @@ environment:
+   cors_enabled: false
+   # Sets the log level for hava, suported values: debug, info, warn, error
+   log_level: info
++  # Sets up an http proxy for Hava to use when connecting to cloud providers to access the public APIs
++  proxy:
+   # This block is for enabling auth0 for managing user credentials, please reach out to hava support on details on how to configure this
+   auth0:
+     enabled:
+```
+
+## 1.2.0 ![AppVersion: v2.3.2686](https://img.shields.io/static/v1?label=AppVersion&message=v2.2.705&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.28.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 * Updated chart to use forked version of ElasticSearch HELM dependency to support newer version of kubernetes
 
