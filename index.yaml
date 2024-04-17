@@ -36,6 +36,30 @@ entries:
     version: 6.8.22
   hava-self-hosted:
   - apiVersion: v2
+    appVersion: 2.5.1154
+    created: "2024-04-17T01:01:08.764200777Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://teamhava.github.io/hava-helm-selfhosted
+      tags:
+      - elasticsearch
+      version: 6.8.23
+    - condition: elasticsearch.enabled
+      name: kibana
+      repository: https://helm.elastic.co
+      tags:
+      - kibana
+      version: 6.8.22
+    description: A Helm chart for Self-Hosted Hava.io
+    digest: 4b07e2362be90b6582695944e351266db104fb8fdd335c3503972b4ef269ce9a
+    kubeVersion: '>= 1.25.0-0'
+    name: hava-self-hosted
+    type: application
+    urls:
+    - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-2.5.1154/hava-self-hosted-2.5.1154.tgz
+    version: 2.5.1154
+  - apiVersion: v2
     appVersion: 2.5.958
     created: "2024-03-06T05:47:58.842003317Z"
     dependencies:
@@ -649,4 +673,4 @@ entries:
     urls:
     - https://github.com/teamhava/hava-helm-selfhosted/releases/download/hava-self-hosted-0.3.2/hava-self-hosted-0.3.2.tgz
     version: 0.3.2
-generated: "2024-03-06T05:47:58.842214501Z"
+generated: "2024-04-17T01:01:08.76436444Z"
