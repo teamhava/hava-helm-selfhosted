@@ -1,5 +1,37 @@
 # Change Log
 
+## 2.5.1154 ![AppVersion: v2.5.1154](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Feature: Environment Notes
+- Feature: Environment Filters
+- Feature: Account Audit Logs
+- Feature: New UI
+- Feature: API Endpoint to list import jobs and their logs
+- Performance: Upgraded libraries to improve API performance
+- Performance: Improved import speeds for accounts with large amounts of SNS topics
+- Improvement: Improved search stability, suggestions, and performance
+- Improvement: View type is updated in environment URLs to assist in linking
+- Improvement: Removed defunct AWS icon set
+- Bug: Fixed issues with missing data in GCP imports and pricing
+- Bug: Fixed a pagination bug that could sometimes result in duplicate versions being listed for an environment
+- Security: Updated dependencies with latest security patches
+
+```diff
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index dbfc449..729fdcb 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -35,7 +35,7 @@ environment:
+ # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
+ image:
+   repository: hava/self-hosted
+-  tag: 2.5.958
++  tag: 2.5.1154
+   pull_policy: IfNotPresent
+   # Set this to use a secret to authenticate with a private container registry
+   pull_secret_name:
+```
+
 ## 1.3.0 ![AppVersion: v2.5.958](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.958&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.28.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.19.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Feature: AWS EventBridge support
