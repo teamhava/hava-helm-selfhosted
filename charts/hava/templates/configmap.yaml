@@ -111,7 +111,6 @@ data:
   AUTH0_CONNECTION: {{ .Values.environment.auth0.connection | quote }}
   {{ end }}
 
-  RECAPTCHA_ENABLED: "false"
   # AWS
   {{- if .Values.aws.regions }}
   AWS_REGIONS: {{ .Values.aws.regions | quote }}

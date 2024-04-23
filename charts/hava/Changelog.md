@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.? ![AppVersion: v2.5.?](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Fixed config ussue that caused captcha to load when not expected to
+
 ## 2.5.1154 ![AppVersion: v2.5.1154](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Feature: Environment Notes
