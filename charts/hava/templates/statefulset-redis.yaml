@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: {{ .Chart.Name }}-redis
-        image: redis:4.0-alpine
+        image: {{ .Values.cache.image.name }}:{{ .Values.cache.image.tag }}
         ports:
         - containerPort: 6379
         volumeMounts:

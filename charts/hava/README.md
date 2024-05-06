@@ -5,8 +5,7 @@
 
 This chart provides an automated way to deploy and upgrade Hava.io in your own cloud environment. It's engineered to require minimal intervention and should deploy in most environments with default values.
 
-> **Major version update: 1.0.0**
-> This upgrade has breaking changes, please review [change log](Changelog.ms) for details on what has changed
+Please review [change log](Changelog.md) for details on what has changed since previous releases
 
 ## Install
 

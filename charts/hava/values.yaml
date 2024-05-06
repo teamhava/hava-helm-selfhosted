@@ -184,6 +184,9 @@ cache:
   ## set to false if hosting redis externally. e.g. memstore paas
   enabled: true
   storage_class: hava
+  image:
+    name: redis
+    tag: 4.0-alpine
 
 # persistent storage configuration
 storage:
