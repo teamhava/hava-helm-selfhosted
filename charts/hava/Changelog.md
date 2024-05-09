@@ -1,5 +1,29 @@
 # Change Log
 
+## 2.5.1232 ![AppVersion: v2.5.1232](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Feature: Custom Connections
+- Security: Security patches for containers and updated libraries
+- Bug: Fixed issue where certs where not trusted when a private CA is used
+- Bug: Fixed issues with the filter feature in the infrastructure view
+- Bug: Fixed issue with Audit logs crashing under certain rare cases
+
+```diff
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 7cc4913..8606241 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -35,7 +35,7 @@ environment:
+ # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
+ image:
+   repository: hava/self-hosted
+-  tag: 2.5.1188
++  tag: 2.5.1232
+   pull_policy: IfNotPresent
+   # Set this to use a secret to authenticate with a private container registry
+   pull_secret_name:
+```
+
 ## 2.5.1189 ![AppVersion: v2.5.1188](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Fixed heml template issue where the redis image couldn't be updated from values file
