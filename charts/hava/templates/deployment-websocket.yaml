@@ -23,6 +23,8 @@ spec:
         app.kubernetes.io/name: {{ include "hava.name" . }}-websocket
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      securityContext:
+        runAsNonRoot: true
       {{- if .Values.serviceaccount.enabled }}
       serviceAccountName: {{ include "hava.serviceaccount.name" . }}
       {{- end }}

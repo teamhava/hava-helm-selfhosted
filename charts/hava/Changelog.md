@@ -1,5 +1,68 @@
 # Change Log
 
+## 2.5.1249 ![AppVersion: v2.5.1249](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Fix: Change executing user in Hava docker image to use a uid to support K8s security context settings
+- Fix: Fixed warning in UI that would complain about variables not set
+- Fix: Fixed issue that would some times cause an internal server error when setting Alerts recipients
+- Security: Patches and vulnerability fixes
+- Security: Added `securityContext.runAsNonRoot: true` to all deployments
+
+```diff
+diff --git a/charts/hava/templates/deployment-clock.yaml b/charts/hava/templates/deployment-clock.yaml
+index 20ea941..b5229d3 100644
+--- a/charts/hava/templates/deployment-clock.yaml
++++ b/charts/hava/templates/deployment-clock.yaml
+@@ -30,6 +30,8 @@ spec:
+         app.kubernetes.io/name: {{ include "hava.name" . }}-clock
+         app.kubernetes.io/instance: {{ .Release.Name }}
+     spec:
++      securityContext:
++        runAsNonRoot: true
+       {{- if .Values.serviceaccount.enabled }}
+       serviceAccountName: {{ include "hava.serviceaccount.name" . }}
+       {{- end }}
+diff --git a/charts/hava/templates/deployment-combined_wokers.yaml b/charts/hava/templates/deployment-combined_wokers.yaml
+index 91b4df9..ad22f8d 100644
+--- a/charts/hava/templates/deployment-combined_wokers.yaml
++++ b/charts/hava/templates/deployment-combined_wokers.yaml
+@@ -30,6 +30,8 @@ spec:
+         app.kubernetes.io/name: {{ include "hava.name" . }}-workers
+         app.kubernetes.io/instance: {{ .Release.Name }}
+     spec:
++      securityContext:
++        runAsNonRoot: true
+       {{- if .Values.serviceaccount.enabled }}
+       serviceAccountName: {{ include "hava.serviceaccount.name" . }}
+       {{- end }}
+diff --git a/charts/hava/templates/deployment-web.yaml b/charts/hava/templates/deployment-web.yaml
+index 35efe20..6d05336 100644
+--- a/charts/hava/templates/deployment-web.yaml
++++ b/charts/hava/templates/deployment-web.yaml
+@@ -23,6 +23,8 @@ spec:
+         app.kubernetes.io/name: {{ include "hava.name" . }}-web
+         app.kubernetes.io/instance: {{ .Release.Name }}
+     spec:
++      securityContext:
++        runAsNonRoot: true
+       {{- if .Values.serviceaccount.enabled }}
+       serviceAccountName: {{ include "hava.serviceaccount.name" . }}
+       {{- end }}
+diff --git a/charts/hava/templates/deployment-websocket.yaml b/charts/hava/templates/deployment-websocket.yaml
+index f0c6d2e..b1a7398 100644
+--- a/charts/hava/templates/deployment-websocket.yaml
++++ b/charts/hava/templates/deployment-websocket.yaml
+@@ -23,6 +23,8 @@ spec:
+         app.kubernetes.io/name: {{ include "hava.name" . }}-websocket
+         app.kubernetes.io/instance: {{ .Release.Name }}
+     spec:
++      securityContext:
++        runAsNonRoot: true
+       {{- if .Values.serviceaccount.enabled }}
+       serviceAccountName: {{ include "hava.serviceaccount.name" . }}
+       {{- end }}
+```
+
 ## 2.5.1232 ![AppVersion: v2.5.1232](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Feature: Custom Connections
