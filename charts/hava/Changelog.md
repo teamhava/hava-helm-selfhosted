@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.5.1288 ![AppVersion: v2.5.1288](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Stability: Removed CPU check for worker processes that would occasionally trigger a restart loop
+- Bug: Fix missing credentials error when the AWS instance profile requests fail. Fixes some rare render failures
+
 ## 2.5.1249 ![AppVersion: v2.5.1249](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Fix: Change executing user in Hava docker image to use a uid to support K8s security context settings
