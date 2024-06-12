@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.5.1349 ![AppVersion: v2.5.1349](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Feature: Environment filter now passed through to export
+- Feature: Make SNS topic and subscription limits configurable
+- Bug: Fixed issue where metadata got corrupted in some scenarios in the environments page
+- Bug: Fixed authentication issue when AWS Gov Cloud is in use and us-east-1 is disabled or not available
+- Bug: Fixed issue where Kubernetes sub-sources would not display properly in some search scenarios 
+- Security: Latest security patches for container and libraries
+
 ## 2.5.1288 ![AppVersion: v2.5.1288](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Stability: Removed CPU check for worker processes that would occasionally trigger a restart loop
