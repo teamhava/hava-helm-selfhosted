@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.5.1393 ![AppVersion: v2.5.1393](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Feature: Ruby CLI now supports cancelling all stuck jobs
+- Fix: Fixed issue with Kubernetes view would in some rare cases throw errors on hover
+- Fix: Updated logic for favorites and UI to match the rest of the filter 
+- Fix: Fixed several small UI inconsistencies 
+- Fix: Environment cards are now treated as links, so they can be opened in a new tab
+- Fix: Fixed issue with regions being available for AWS Gov Cloud
+- Security: Applied latest patches and security fixes for containers and libraries
+
 ## 2.5.1357 ![AppVersion: v2.5.1357](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Feature: Environment filter now passed through to export
