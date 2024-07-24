@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.5.1397 ![AppVersion: v2.5.1397](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Security: Fixed issue where URLs could be injected to invitation emails through team names and be clickable in the email sent
+- Security: System and library patches
+- Fix: Several small fixes and adjustments in the UI
+- Fix: Bug in data loading for embedded view that would stop loading data early for some resources
+
 ## 2.5.1393 ![AppVersion: v2.5.1393](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Feature: Ruby CLI now supports cancelling all stuck jobs
