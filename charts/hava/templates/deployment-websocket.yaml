@@ -106,11 +106,6 @@ spec:
               secretKeyRef:
                 name: {{ include "hava.fullname" . }}-secrets
                 key: "s3-secret-access-key"
-          - name: SMTP_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "hava.fullname" . }}-secrets
-                key: "smtp-email-pass"
           - name: SECRET_KEY
             valueFrom:
               secretKeyRef:

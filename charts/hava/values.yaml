@@ -35,7 +35,7 @@ environment:
 # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
 image:
   repository: hava/self-hosted
-  tag: 2.5.1397
+  tag: 2.5.1408
   pull_policy: IfNotPresent
   # Set this to use a secret to authenticate with a private container registry
   pull_secret_name:
@@ -165,10 +165,10 @@ database:
 
 email: 
   smtp:
-    # Username for the user to authenticate with the smtp endpoint
-    user: "example"
-    # Password for the user to authenticate with the smtp endpoint
-    pass: "example"
+    # Username for the user to authenticate with the smtp endpoint, leave blank to use anonymous
+    user:
+    # Password for the user to authenticate with the smtp endpoint, leave blank to use anonymous
+    pass:
     # Port to connect to the smpt endpoint
     port: 25
     # The endpoint to connect to

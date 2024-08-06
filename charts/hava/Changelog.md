@@ -1,5 +1,166 @@
 # Change Log
 
+## 2.5.1408 ![AppVersion: v2.5.1408](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Feature: Added support for anonymous SMTP endpoints
+- Feature: Added storage class for aws gp3 called hava-gp3
+- Fix: Fonts and icons now load from the local host rather than a CDN
+- Security: Updated latest patches for OS and libraries 
+
+```diff
+diff --git a/charts/hava/templates/configmap.yaml b/charts/hava/templates/configmap.yaml
+index b787694..0d7194b 100644
+--- a/charts/hava/templates/configmap.yaml
++++ b/charts/hava/templates/configmap.yaml
+@@ -91,7 +91,11 @@ data:
+   EMBEDDABLE_TYPE: "s3"
+ 
+   # Email
++  {{- if .Values.email.smtp.user }}
+   SMTP_USER: {{ .Values.email.smtp.user | quote }}
++  {{- else }}
++  SMTP_ANONYMOUS: "true"
++  {{- end }}
+   SMTP_ADDRESS: {{ .Values.email.smtp.endpoint | quote }}
+   SMTP_PORT: {{ .Values.email.smtp.port | quote }}
+   SMTP_DOMAIN: {{ .Values.email.smtp.domain | quote }}
+diff --git a/charts/hava/templates/deployment-clock.yaml b/charts/hava/templates/deployment-clock.yaml
+index b5229d3..6d21ae3 100644
+--- a/charts/hava/templates/deployment-clock.yaml
++++ b/charts/hava/templates/deployment-clock.yaml
+@@ -99,11 +99,13 @@ spec:
+             secretKeyRef:
+               name: {{ include "hava.fullname" . }}-secrets
+               key: "s3-secret-access-key"
++        {{- if .Values.email.smtp.pass }}
+         - name: SMTP_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: {{ include "hava.fullname" . }}-secrets
+               key: "smtp-email-pass"
++        {{- end }}
+       volumes:
+       - name: license
+         secret:
+diff --git a/charts/hava/templates/deployment-combined_wokers.yaml b/charts/hava/templates/deployment-combined_wokers.yaml
+index ad22f8d..84d82b3 100644
+--- a/charts/hava/templates/deployment-combined_wokers.yaml
++++ b/charts/hava/templates/deployment-combined_wokers.yaml
+@@ -99,11 +99,13 @@ spec:
+             secretKeyRef:
+               name: {{ include "hava.fullname" . }}-secrets
+               key: "s3-secret-access-key"
++        {{- if .Values.email.smtp.pass }}
+         - name: SMTP_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: {{ include "hava.fullname" . }}-secrets
+               key: "smtp-email-pass"
++        {{- end }}
+       volumes:
+       - name: license
+         secret:
+diff --git a/charts/hava/templates/deployment-web.yaml b/charts/hava/templates/deployment-web.yaml
+index 6d05336..964b6a8 100644
+--- a/charts/hava/templates/deployment-web.yaml
++++ b/charts/hava/templates/deployment-web.yaml
+@@ -94,11 +94,13 @@ spec:
+               secretKeyRef:
+                 name: {{ include "hava.fullname" . }}-secrets
+                 key: "s3-secret-access-key"
++          {{- if .Values.email.smtp.pass }}
+           - name: SMTP_PASSWORD
+             valueFrom:
+               secretKeyRef:
+                 name: {{ include "hava.fullname" . }}-secrets
+                 key: "smtp-email-pass"
++          {{- end }}
+           - name: SECRET_KEY
+             valueFrom:
+               secretKeyRef:
+diff --git a/charts/hava/templates/deployment-websocket.yaml b/charts/hava/templates/deployment-websocket.yaml
+index b1a7398..a0fbeb5 100644
+--- a/charts/hava/templates/deployment-websocket.yaml
++++ b/charts/hava/templates/deployment-websocket.yaml
+@@ -106,11 +106,6 @@ spec:
+               secretKeyRef:
+                 name: {{ include "hava.fullname" . }}-secrets
+                 key: "s3-secret-access-key"
+-          - name: SMTP_PASSWORD
+-            valueFrom:
+-              secretKeyRef:
+-                name: {{ include "hava.fullname" . }}-secrets
+-                key: "smtp-email-pass"
+           - name: SECRET_KEY
+             valueFrom:
+               secretKeyRef:
+diff --git a/charts/hava/templates/secrets.yaml b/charts/hava/templates/secrets.yaml
+index c95093d..ad3aad7 100644
+--- a/charts/hava/templates/secrets.yaml
++++ b/charts/hava/templates/secrets.yaml
+@@ -14,7 +14,9 @@ stringData:
+   web-secret-key: {{ required "Encryption web key required, please set encryption.web_key in config file." .Values.encryption.web_key | quote }}
+   database-pass: {{ required "Database password needs to be set, please set database.password in the config file" .Values.database.password | quote }}
+   elasticsearch-pass: {{ .Values.elasticsearch.password | quote }}
++  {{- if .Values.email.smtp.pass }}
+   smtp-email-pass: {{ .Values.email.smtp.pass | quote }}
++  {{- end }}
+   images-secret-key: {{ .Values.render.aws.secret_key | quote }}
+   {{- if not .Values.render.aws.use_sa_role }}
+   s3-secret-access-key: {{ required "An s3 secret key is required for storing environment renders. Use 'render.aws.secret_key' to set it" .Values.render.aws.secret_key | quote }}
+diff --git a/charts/hava/templates/storage.yaml b/charts/hava/templates/storage.yaml
+index ce24a25..41afad0 100644
+--- a/charts/hava/templates/storage.yaml
++++ b/charts/hava/templates/storage.yaml
+@@ -84,6 +84,17 @@ parameters:
+   type: gp2
+   fsType: ext4
+   encrypted: "true"
++---
++apiVersion: storage.k8s.io/v1
++kind: StorageClass
++metadata:
++  name: hava-gp3
++provisioner: kubernetes.io/aws-ebs
++allowVolumeExpansion: true
++parameters:
++  type: gp3
++  fsType: ext4
++  encrypted: "true"
+ {{- end }}
+ 
+ {{- if eq (.Values.storage.type | upper)  "AZURE" }}
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 1f5362f..6dcaf37 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -35,7 +35,7 @@ environment:
+ # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
+ image:
+   repository: hava/self-hosted
+-  tag: 2.5.1397
++  tag: 2.5.1408
+   pull_policy: IfNotPresent
+   # Set this to use a secret to authenticate with a private container registry
+   pull_secret_name:
+@@ -165,10 +165,10 @@ database:
+ 
+ email: 
+   smtp:
+-    # Username for the user to authenticate with the smtp endpoint
+-    user: "example"
+-    # Password for the user to authenticate with the smtp endpoint
+-    pass: "example"
++    # Username for the user to authenticate with the smtp endpoint, leave blank to use anonymous
++    user:
++    # Password for the user to authenticate with the smtp endpoint, leave blank to use anonymous
++    pass:
+     # Port to connect to the smpt endpoint
+     port: 25
+     # The endpoint to connect to
+
+```
+
 ## 2.5.1397 ![AppVersion: v2.5.1397](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Security: Fixed issue where URLs could be injected to invitation emails through team names and be clickable in the email sent

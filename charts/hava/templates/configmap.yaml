@@ -91,7 +91,11 @@ data:
   EMBEDDABLE_TYPE: "s3"
 
   # Email
+  {{- if .Values.email.smtp.user }}
   SMTP_USER: {{ .Values.email.smtp.user | quote }}
+  {{- else }}
+  SMTP_ANONYMOUS: "true"
+  {{- end }}
   SMTP_ADDRESS: {{ .Values.email.smtp.endpoint | quote }}
   SMTP_PORT: {{ .Values.email.smtp.port | quote }}
   SMTP_DOMAIN: {{ .Values.email.smtp.domain | quote }}
