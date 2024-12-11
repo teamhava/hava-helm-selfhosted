@@ -1,5 +1,31 @@
 # Change Log
 
+## 2.5.1437 ![AppVersion: v2.5.1437](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Feature: SCIM provisioning is now available
+- Feature: Added support for ap-southeast-5 region in AWS
+- Feature: Audit logs are now enable for all licences. You can view them in Account Settings
+- Fix: Fixed and issue with fonts not loading in diagrams for some setups
+- Fix: Fixed imports for WAFv2 where data sent from AWS was occasionally malformed
+- Fix: Better handling of multiple projects in GCP where the service account might not have read access on the projects.
+- Security: System and library patches
+
+```diff
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 6dcaf37..4928cbd 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -35,7 +35,7 @@ environment:
+ # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
+ image:
+   repository: hava/self-hosted
+-  tag: 2.5.1408
++  tag: 2.5.1437
+   pull_policy: IfNotPresent
+   # Set this to use a secret to authenticate with a private container registry
+   pull_secret_name:
+```
+
 ## 2.5.1408 ![AppVersion: v2.5.1408](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Feature: Added support for anonymous SMTP endpoints
