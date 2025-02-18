@@ -26,17 +26,25 @@ data:
   CAR_USER_ACCESS_KEY: {{ .Values.import.aws.access_key | quote }}
 
   RENDER_STORAGE_TYPE: {{ .Values.render.storage_type | quote }}
-  RENDER_STOAGE_PREFIX: {{ .Values.render.storage_prefix | quote }}
+  RENDER_STORAGE_PREFIX: {{ .Values.render.storage_prefix | quote }}
+  EMBEDDABLE_STORAGE_TYPE: {{ .Values.render.storage_type | quote }}
+  EMBEDDABLE_STORAGE_PREFIX: {{ .Values.render.storage_prefix | quote }}
+
   {{- if eq (.Values.render.storage_type | upper) "S3"}}
   RENDER_S3_ACCESS_KEY_ID: {{ .Values.render.aws.access_key | quote }}
   RENDER_STORAGE_LOCATION: {{ .Values.render.aws.bucket | quote }}
   RENDER_STORAGE_REGION: {{ .Values.render.aws.region | quote }}
+
+  EMBEDDABLE_STORAGE_LOCATION: {{ .Values.render.aws.bucket | quote }}
+  EMBEDDABLE_STORAGE_REGION: {{ .Values.render.aws.region | quote }}
   {{- end}}
 
   {{- if eq (.Values.render.storage_type | upper) "AZURE-BLOB" }}
   RENDER_STORAGE_LOCATION:  {{ .Values.render.azure.blob_container | quote }}
   RENDER_AZURE_STORAGE_ACCOUNT_NAME: {{ .Values.render.azure.storage_account | quote }}
   RENDER_AZURE_STORAGE_ACCESS_KEY: {{ .Values.render.azure.access_key | quote }}
+
+  EMBEDDABLE_STORAGE_LOCATION: {{ .Values.render.azure.blob_container | quote }}
   {{- end}}
 
   # Application URLs

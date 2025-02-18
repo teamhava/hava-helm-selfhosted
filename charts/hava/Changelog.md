@@ -1,5 +1,43 @@
 # Change Log
 
+## 2.5.1438 ![AppVersion: v2.5.1438](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Fix: Fix azure-blob storage for embedded diagrams
+
+```diff
+diff --git a/charts/hava/templates/configmap.yaml b/charts/hava/templates/configmap.yaml
+index 0d7194b..db4263d 100644
+--- a/charts/hava/templates/configmap.yaml
++++ b/charts/hava/templates/configmap.yaml
+@@ -26,17 +26,25 @@ data:
+   CAR_USER_ACCESS_KEY: {{ .Values.import.aws.access_key | quote }}
+
+   RENDER_STORAGE_TYPE: {{ .Values.render.storage_type | quote }}
+-  RENDER_STOAGE_PREFIX: {{ .Values.render.storage_prefix | quote }}
++  RENDER_STORAGE_PREFIX: {{ .Values.render.storage_prefix | quote }}
++  EMBEDDABLE_STORAGE_TYPE: {{ .Values.render.storage_type | quote }}
++  EMBEDDABLE_STORAGE_PREFIX: {{ .Values.render.storage_prefix | quote }}
++
+   {{- if eq (.Values.render.storage_type | upper) "S3"}}
+   RENDER_S3_ACCESS_KEY_ID: {{ .Values.render.aws.access_key | quote }}
+   RENDER_STORAGE_LOCATION: {{ .Values.render.aws.bucket | quote }}
+   RENDER_STORAGE_REGION: {{ .Values.render.aws.region | quote }}
++
++  EMBEDDABLE_STORAGE_LOCATION: {{ .Values.render.aws.bucket | quote }}
++  EMBEDDABLE_STORAGE_REGION: {{ .Values.render.aws.region | quote }}
+   {{- end}}
+
+   {{- if eq (.Values.render.storage_type | upper) "AZURE-BLOB" }}
+   RENDER_STORAGE_LOCATION:  {{ .Values.render.azure.blob_container | quote }}
+   RENDER_AZURE_STORAGE_ACCOUNT_NAME: {{ .Values.render.azure.storage_account | quote }}
+   RENDER_AZURE_STORAGE_ACCESS_KEY: {{ .Values.render.azure.access_key | quote }}
++
++  EMBEDDABLE_STORAGE_LOCATION: {{ .Values.render.azure.blob_container | quote }}
+   {{- end}}
+
+   # Application URLs
+```
+
 ## 2.5.1437 ![AppVersion: v2.5.1437](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Feature: SCIM provisioning is now available
