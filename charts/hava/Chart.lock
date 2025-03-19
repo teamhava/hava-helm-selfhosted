@@ -1,9 +1,9 @@
 dependencies:
 - name: elasticsearch
-  repository: https://teamhava.github.io/hava-helm-selfhosted
-  version: 6.8.23
+  repository: https://helm.elastic.co
+  version: 7.17.3
 - name: kibana
   repository: https://helm.elastic.co
-  version: 6.8.22
-digest: sha256:cee31cb8a2a3182e021b9bfbc23cdae39530563e7ebdead00b31d0c58490b52f
-generated: "2024-01-04T16:27:30.087191+11:00"
+  version: 7.17.3
+digest: sha256:7b50aee538160f0dbcb3cc7e095c901fda0eb3d076bd3a5c7fd84a3fdd913e3b
+generated: "2025-03-13T11:07:25.422722+11:00"

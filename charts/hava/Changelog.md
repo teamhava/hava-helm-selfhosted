@@ -1,5 +1,87 @@
 # Change Log
 
+## 2.6.1469 ![AppVersion: v2.6.1469](https://img.shields.io/static/v1?label=AppVersion&message=v2.6.1469&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.31.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+- Upgrade: Hava now uses Elasticsearch 7
+- Feature: Better display of AWS network resources - transit gateways and VPC endpoints now display connections to relevant VPCs
+- Feature: AWS Network Load Balancers now supports displaying connections for IPs in target groups
+- Feature: Display connected EventBus resources in Lambda attributes
+- Fix: Handle connection errors in kube imports
+- Fix: Better handling for Azure DisallowedProvider errors
+- Fix: Better handling of pagination for AWS VPC endpoints during import
+- Fix: Better handling of nil ID's in responses from AWS and GCP
+- Security: System and library patches
+
+```diff
+diff --git a/charts/hava/Chart.lock b/charts/hava/Chart.lock
+index 80615ad..519b82f 100644
+--- a/charts/hava/Chart.lock
++++ b/charts/hava/Chart.lock
+@@ -1,9 +1,9 @@
+ dependencies:
+ - name: elasticsearch
+-  repository: https://teamhava.github.io/hava-helm-selfhosted
+-  version: 6.8.23
++  repository: https://helm.elastic.co
++  version: 7.17.3
+ - name: kibana
+   repository: https://helm.elastic.co
+-  version: 6.8.22
+-digest: sha256:cee31cb8a2a3182e021b9bfbc23cdae39530563e7ebdead00b31d0c58490b52f
+-generated: "2024-01-04T16:27:30.087191+11:00"
++  version: 7.17.3
++digest: sha256:7b50aee538160f0dbcb3cc7e095c901fda0eb3d076bd3a5c7fd84a3fdd913e3b
++generated: "2025-03-13T11:07:25.422722+11:00"
+diff --git a/charts/hava/Chart.yaml b/charts/hava/Chart.yaml
+index 7d21c3f..a0365dd 100644
+--- a/charts/hava/Chart.yaml
++++ b/charts/hava/Chart.yaml
+@@ -17,13 +17,13 @@ type: application
+ # This is the chart version. This version number should be incremented each time you make changes
+ # to the chart and its templates, including the app version.
+ # Versions are expected to follow Semantic Versioning (https://semver.org/)
+-version: 2.5.1438
++version: 2.6.1469
+
+ # This is the version number of the application being deployed. This version number should be
+ # incremented each time you make changes to the application. Versions are not expected to
+ # follow Semantic Versioning. They should reflect the version the application is using.
+ # It is recommended to use it with quotes.
+-appVersion: "2.5.1437"
++appVersion: "2.6.1469"
+
+ kubeVersion: ">= 1.25.0-0"
+
+diff --git a/charts/hava/values.yaml b/charts/hava/values.yaml
+index 4928cbd..1f773ec 100644
+--- a/charts/hava/values.yaml
++++ b/charts/hava/values.yaml
+@@ -35,7 +35,7 @@ environment:
+ # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
+ image:
+   repository: hava/self-hosted
+-  tag: 2.5.1437
++  tag: 2.6.1469
+   pull_policy: IfNotPresent
+   # Set this to use a secret to authenticate with a private container registry
+   pull_secret_name:
+@@ -204,11 +204,13 @@ elasticsearch:
+   # Image repository to download the elastic image from, change if using an internal container registry
+   image: hava/elasticsearch
+   # the tag of the image
+-  imageTag: 6.8-s3-backup-1.0.6
++  imageTag: 7.17-s3-backup-1.0.7
+   esConfig:
+     # sets the max size of imported documents
+     elasticsearch.yml: |
+       http.max_content_length: 500mb
++      bootstrap.system_call_filter: false
++      xpack.security.enabled: false
+   backup:
+     # Change this to disable backups for the elasticsearch deployment
+     enabled: true
+```
+
 ## 2.5.1438 ![AppVersion: v2.5.1438](https://img.shields.io/static/v1?label=AppVersion&message=v2.5.1154&color=success&logo=) ![Kubernetes: >=1.25.0-0 <1.29.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.28.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 - Fix: Fix azure-blob storage for embedded diagrams

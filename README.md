@@ -9,4 +9,3 @@ The charts can be found in the `charts` folder
 ## Current Charts
 
 - [hava](charts/hava/README.md)
-- [Elastic](charts/elasticsearch/README.md)
