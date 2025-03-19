@@ -35,7 +35,7 @@ environment:
 # This block is for setting the image used by the Hava pods. Changing if a private container repository is needed
 image:
   repository: hava/self-hosted
-  tag: 2.5.1437
+  tag: 2.6.1469
   pull_policy: IfNotPresent
   # Set this to use a secret to authenticate with a private container registry
   pull_secret_name:
@@ -204,11 +204,13 @@ elasticsearch:
   # Image repository to download the elastic image from, change if using an internal container registry
   image: hava/elasticsearch
   # the tag of the image
-  imageTag: 6.8-s3-backup-1.0.6
+  imageTag: 7.17-s3-backup-1.0.7
   esConfig:
     # sets the max size of imported documents
     elasticsearch.yml: |
       http.max_content_length: 500mb
+      bootstrap.system_call_filter: false
+      xpack.security.enabled: false
   backup:
     # Change this to disable backups for the elasticsearch deployment
     enabled: true

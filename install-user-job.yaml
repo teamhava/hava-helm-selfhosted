@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: install-user-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: setup
+          image: "hava/self-hosted:2.5.1437"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args: ["hava accounts setup tom@hava.io tom@hava.io"]
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://hava:password@hava.cluster-cgsjmovphepz.us-east-2.rds.amazonaws.com:5432/hava"
+            - name: REDIS_URL
+              value: "redis://hava-hava-self-hosted-redis:6379"
+            - name: ELASTICSEARCH_URL
+              value: "http://hava-elasticsearch-master:9200"
