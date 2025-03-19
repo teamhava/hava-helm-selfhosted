@@ -40,14 +40,14 @@ index 7d21c3f..a0365dd 100644
  # This is the chart version. This version number should be incremented each time you make changes
  # to the chart and its templates, including the app version.
  # Versions are expected to follow Semantic Versioning (https://semver.org/)
--version: 2.6.1467
+-version: 2.5.1438
 +version: 2.6.1469
 
  # This is the version number of the application being deployed. This version number should be
  # incremented each time you make changes to the application. Versions are not expected to
  # follow Semantic Versioning. They should reflect the version the application is using.
  # It is recommended to use it with quotes.
--appVersion: "2.6.1467"
+-appVersion: "2.5.1437"
 +appVersion: "2.6.1469"
 
  kubeVersion: ">= 1.25.0-0"
